@@ -1,90 +1,15 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
 import arcade
 
-LEVELS = ["""
-########
-#ccc d #
-#    d #
-# aa d *
-#bbbf  #
-#  efgg#
-#  e hh#
-########
-""", """
-########
-#    d #
-#    d #
-# aa d *
-#      #
-#      #
-#      #
-########
-"""]
-
-FORWARD = 'FORWARD'
-BACKWARD = 'BACKWARD'
-
-VERTICAL = 'VERTICAL'
-HORIZONTAL = 'HORIZONTAL'
-
-ACTIONS_BY_CAR = [FORWARD, BACKWARD]
-
-
-class CarState:
-
-    def __init__(self, x, y, direction, length):
-        self.x = x,
-        self.y = y
-        self.direction = direction
-        self.length = length
-
-    def __repr__(self):
-        return 'x :' + str(self.x) + ',y : ' + str(self.y) + ' ,direction' + str(self.direction) + \
-               ', length : ' + str(self.length)
-
-
-ACTIONS = {('a', FORWARD): -1, ('a', BACKWARD): -1}  # Pour chaque voiture
-
-State1 = (CarState(x=0, y=0, direction=VERTICAL, length=2), CarState(x=0, y=1, direction=VERTICAL, length=2))
-State2 = (CarState(x=0, y=1, direction=VERTICAL, length=2), CarState(x=0, y=1, direction=VERTICAL, length=2))
-
-q_table = {State1: ACTIONS}
-
-# Q-table
-#        U  D    L   R
-# (0, 0) 6  -7   10  20
-# (0, 1) 15 -100  5
-#    :
-# (5, 10)
-
-# Q-table
-#
-#
-#   Actions de base : Avancé et Reculé
-#
-#    (y,x,D,L)
-#    Class CarState :
-#        y: number
-#        x: Number
-#        direction:
-#        Longueur:
-
-#
-#                                                                                                  Voiture A Avance   Voiture A recule  ...  Voiture Z Avance   Voiture Z recule  (NbCAR * Actions par voiture)
-#  ((y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L))
-#  (CarState, CarState, CarState, CarState)
-#
-#  1state = (CarState x NbCar)
+from agent import Agent
+from environment import Environment
 
 
 REWARD_IMPOSSIBLE = -1000000
 REWARD_SUCCESS = 1000000
 
-
+####
+#  Definitions
+####
 #
 # Une voiture c'est:
 #   - une position de départ (x,y)
@@ -101,33 +26,7 @@ REWARD_SUCCESS = 1000000
 #
 
 
-class Environment:
-    def __init__(self):
-        self.states = {}
-        lines = LEVELS[1].strip().split('\n')
-        self.height = len(lines)
-        self.width = len(lines[0])
-
-        for row in range(self.height):
-            for col in range(len(lines[row])):
-                self.states[(row, col)] = lines[row][col]
-                if lines[row][col] == '*':
-                    self.goal = (row, col)
-        print("self.states ", self.states)
-
-
 SPRITE_SIZE = 64
-
-
-class Agent:
-    def __init__(self, environment):
-        self.environment = environment
-
-    def best_action(self):
-        pass
-
-    def update_policy(self):
-        pass
 
 
 class Window(arcade.Window):
@@ -180,6 +79,28 @@ if __name__ == '__main__':
     window = Window(agent)
     window.setup()
     arcade.run()
+
+    # # Initialiser l'environment
+    # environment = Environment(MAZE)
+    #
+    # # Initialiser l'agent
+    # agent = Agent(environment)
+    #
+    # # Boucle principale
+    # # Tant que l'agent n'est pas sorti du labyrinthe
+    # step = 1
+    # while agent.state != environment.goal:
+    #     # for step in range(10):
+    #     # Choisir la meilleure action de l'agent
+    #     action = agent.best_action()
+    #
+    #     # Obtenir le nouvel état de l'agent et sa récompense
+    #     agent.do(action)
+    #     print('#', step, 'ACTION:', action, 'STATE:', agent.previous_state, '->', agent.state, 'SCORE:', agent.score)
+    #     step += 1
+    #
+    #     # A partir de St, St+1, at, rt+1, on met à jour la politique (policy, q-table, etc.)
+    #     agent.update_policy()
 
 #
 # Systeme de score proposition :
