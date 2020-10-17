@@ -1,7 +1,7 @@
 import arcade
 
 from agent import Agent
-from environment import Environment
+from environment import Environment, Direction
 
 
 REWARD_IMPOSSIBLE = -1000000
@@ -26,14 +26,43 @@ REWARD_SUCCESS = 1000000
 #
 
 
+LEVELS = ["""
+########
+#ccc d #
+#    d #
+# aa d *
+#bbbf  #
+#  efgg#
+#  e hh#
+########
+""", """
+########
+#      #
+#      #
+# aa b *
+# d  b #
+# d  b #
+# d ccc#
+########
+""", """
+########
+#ccc d #
+#    d #
+# aa d *
+#bbb   #
+#  e gg#
+#  e hh#
+########
+"""]
+
 SPRITE_SIZE = 64
 
 
 class Window(arcade.Window):
 
     def __init__(self, agent):
-        super().__init__(agent.environment.width * SPRITE_SIZE,
-                         agent.environment.height * SPRITE_SIZE,
+        super().__init__(agent.environment.board_game.width * SPRITE_SIZE,
+                         agent.environment.board_game.height * SPRITE_SIZE,
                          'Escape from Parking')
         self.agent = agent
         arcade.set_background_color(arcade.csscolor.DARK_BLUE)
@@ -41,22 +70,30 @@ class Window(arcade.Window):
     def setup(self):
         self.walls = arcade.SpriteList()
         self.cars = arcade.SpriteList()
-        for state in self.agent.environment.states:
-            print(state, self.agent.environment.states[state])
-            if self.agent.environment.states[state] == '#':
-                sprite = arcade.Sprite(":resources:images/tiles/grassCenter.png", 0.5)
-                sprite.center_x = state[1] * SPRITE_SIZE + SPRITE_SIZE * 0.5
-                sprite.center_y = self.height - (state[0] * SPRITE_SIZE + SPRITE_SIZE * 0.5)
-                self.walls.append(sprite)
-            elif 'a' <= self.agent.environment.states[state] <= 'z':
-                sprite = arcade.Sprite(":resources:images/space_shooter/playerShip2_orange.png", 0.5)
-                sprite.center_x = state[1] * SPRITE_SIZE + SPRITE_SIZE * 0.5
-                sprite.center_y = self.height - (state[0] * SPRITE_SIZE + SPRITE_SIZE * 0.5)
-                self.cars.append(sprite)
+        for row in range(self.agent.environment.board_game.height):
+            for column in range(self.agent.environment.board_game.width):
+                if self.agent.environment.board_game.is_wall(x=column, y=row):
+                    sprite = arcade.Sprite(":resources:images/tiles/grassCenter.png", 0.5)
+                    sprite.center_x = column * SPRITE_SIZE + SPRITE_SIZE * 0.5
+                    sprite.center_y = self.height - (row * SPRITE_SIZE + SPRITE_SIZE * 0.5)
+                    self.walls.append(sprite)
+
+        for car_state in self.agent.environment.current_state.value:
+            print(car_state)
+            sprite = arcade.Sprite(":resources:images/enemies/slimeBlock.png", 1)
+            if car_state.direction == Direction.HORIZONTAL:
+                sprite.width = car_state.length * SPRITE_SIZE
+                sprite.height = SPRITE_SIZE
+            else:
+                sprite.width = SPRITE_SIZE
+                sprite.height = car_state.length * SPRITE_SIZE
+            sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
+            sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
+            self.cars.append(sprite)
 
         self.goal = arcade.Sprite(":resources:images/items/flagGreen1.png", 0.5)
-        self.goal.center_x = self.agent.environment.goal[1] * self.goal.width + self.goal.width * 0.5
-        self.goal.center_y = self.height - (self.agent.environment.goal[0] * self.goal.width + self.goal.width * 0.5)
+        self.goal.center_x = self.agent.environment.goal[0] * self.goal.width + self.goal.width * 0.5
+        self.goal.center_y = self.height - (self.agent.environment.goal[1] * self.goal.width + self.goal.width * 0.5)
 
     def update_player(self):
         pass
@@ -73,9 +110,14 @@ class Window(arcade.Window):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    environment = Environment()
+
+    # Initialiser l'environment
+    environment = Environment(board=LEVELS[1])
+
+    # Initialiser l'agent
     agent = Agent(environment)
 
+    print(environment.goal)
     window = Window(agent)
     window.setup()
     arcade.run()

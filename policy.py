@@ -1,10 +1,4 @@
 
-
-ACTIONS = {('a', FORWARD): -1, ('a', BACKWARD): -1}  # Pour chaque voiture
-
-
-q_table = {State1: ACTIONS}
-
 # Q-table
 #        U  D    L   R
 # (0, 0) 6  -7   10  20
