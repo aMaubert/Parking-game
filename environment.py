@@ -1,36 +1,6 @@
 from enum import Enum
 from typing import List
-from collections import OrderedDict
-from copy import copy, deepcopy
-
-LEVELS = ["""
-########
-#ccc d #
-#    d #
-# aa d *
-#bbbf  #
-#  efgg#
-#  e hh#
-########
-""", """
-########
-#      #
-#      #
-# aa b *
-# d  b #
-# d  b #
-# d ccc#
-########
-""","""
-########
-#ccc d #
-#    d #
-# aa d *
-#bbb   #
-#  e gg#
-#  e hh#
-########
-"""]
+from copy import deepcopy
 
 
 class CAR_ACTION(Enum):
@@ -42,7 +12,7 @@ class CAR_ACTION(Enum):
 
     def change_action(self):
         if self == CAR_ACTION.FORWARD:
-            return  CAR_ACTION.BACKWARD
+            return CAR_ACTION.BACKWARD
         return CAR_ACTION.FORWARD
 
 
@@ -89,6 +59,13 @@ class BoardGame:
 
     def __init__(self, board_game: List[str]):
         self.board_game = board_game
+        self.height = len(board_game)
+        self.width = len(board_game[0])
+
+    def is_wall(self, x: int, y: int):
+        if self.board_game[y][x] == '#':
+            return True
+        return False
 
     def deplacement_is_possible(self, car: CarState, action: CAR_ACTION):
         if car.direction == Direction.HORIZONTAL:
@@ -185,27 +162,27 @@ class BoardGame:
                 car.y += 1
         return car
 
-    def make_way(self,cars: {str: CarState}, car: CarState, action: CAR_ACTION):
-        #TODO tant que la position a liberer n'est pas libre
+    def make_way(self, cars: {str: CarState}, car: CarState, action: CAR_ACTION):
+        # TODO tant que la position a liberer n'est pas libre
         print('car : ', self.board_game[car.y][car.x], ' ', car, '  action :', action)
-        x , y = BoardGame.compute_position_to_unblock(car, action)
+        x, y = BoardGame.compute_position_to_unblock(car, action)
         car_to_move_away = cars[self.board_game[y][x]]
         if not self.deplacement_is_possible(car=car_to_move_away, action=CAR_ACTION.FORWARD) and \
-           not self.deplacement_is_possible(car=car_to_move_away, action=CAR_ACTION.BACKWARD):
-            print('Voiture ', self.board_game[y][x],'Coincé' )
+                not self.deplacement_is_possible(car=car_to_move_away, action=CAR_ACTION.BACKWARD):
+            print('Voiture ', self.board_game[y][x], 'Coincé')
             if self.deplacement_will_crush_a_car(car=car_to_move_away, action=CAR_ACTION.FORWARD):
                 self.make_way(cars=cars, car=car_to_move_away, action=CAR_ACTION.FORWARD)
             elif self.deplacement_will_crush_a_car(car=car_to_move_away, action=CAR_ACTION.BACKWARD):
                 self.make_way(cars=cars, car=car_to_move_away, action=CAR_ACTION.BACKWARD)
             else:
-                print('Voiture ', self.board_game[y][x],'Coincé , IMPOSSIBLE logiquement')
+                print('Voiture ', self.board_game[y][x], 'Coincé , IMPOSSIBLE logiquement')
                 exit(1)
         given_direction = CAR_ACTION.BACKWARD
         count = 0
         while is_car(self.board_game[y][x]):
             count += 1
             if count == 60:
-                print('COUNT arrivé  à ', str(count),' donc bloker')
+                print('COUNT arrivé  à ', str(count), ' donc bloker')
                 exit(1)
             if self.deplacement_is_possible(car=car_to_move_away, action=given_direction):
                 print(x, y, ' ', self.board_game[y][x])
@@ -222,7 +199,7 @@ class BoardGame:
             given_direction = given_direction.change_action()
 
             if self.deplacement_is_possible(car=car_to_move_away, action=given_direction):
-                print(x,y, ' ', self.board_game[y][x])
+                print(x, y, ' ', self.board_game[y][x])
                 self.deplacement(car=car_to_move_away, action=given_direction)
                 print(x, y, ' ', self.board_game[y][x])
                 print('Save the state in make_way')
@@ -233,14 +210,13 @@ class BoardGame:
                 self.make_way(cars=cars, car=car_to_move_away, action=given_direction)
                 continue
             else:
-                print('case bloquante ', self.board_game[y][x], ' pos : ', x , y)
-
+                print('case bloquante ', self.board_game[y][x], ' pos : ', x, y)
 
     def __repr__(self):
         return '\n'.join(self.board_game)
 
     @staticmethod
-    def compute_position_to_unblock(car: CarState, action:CAR_ACTION):
+    def compute_position_to_unblock(car: CarState, action: CAR_ACTION):
         if action == CAR_ACTION.FORWARD:
             if car.direction == Direction.HORIZONTAL:
                 return car.x + car.length, car.y
@@ -252,6 +228,54 @@ class BoardGame:
             elif car.direction == Direction.VERTICAL:
                 return car.x, car.y + car.length
         raise Exception('compute_position_to_unblock error')
+
+    def compute_cars(self):
+        cars = {}
+        for row in range(self.height):
+            for col in range(self.width):  ## On s'occupe pas des rebords # ni du *
+                if 'a' <= self.board_game[row][col] <= 'z' and self.board_game[row][col] not in cars.keys():
+                    cars_state = self.compute_car_state_from_pos(row=row, col=col)
+                    cars.update({self.board_game[row][col]: cars_state})
+        return dict(sorted(cars.items()))
+
+    def compute_car_state_from_pos(self, row, col):
+        direction = self.compute_direction(row=row, col=col)
+        y, x = self.compute_starting_point(row=row, col=col, direction=direction)
+        length = self.compute_length(y=y, x=x, direction=direction)
+        return CarState(x=x, y=y, direction=direction, length=length)
+
+    def compute_direction(self, row, col):
+        direction = Direction.VERTICAL
+        if self.board_game[row][col] == self.board_game[row][col + 1] or self.board_game[row][col] == \
+                self.board_game[row][col - 1]:
+            direction = Direction.HORIZONTAL
+        return direction
+
+    def compute_starting_point(self, row, col, direction):
+        if direction == Direction.VERTICAL:
+            if self.board_game[row][col] == self.board_game[row][col - 1]:
+                return self.compute_starting_point(row, col - 1, direction)
+            return row, col
+        if self.board_game[row][col] == self.board_game[row - 1][col]:
+            return self.compute_starting_point(row - 1, col, direction)
+        return row, col
+
+    def compute_length(self, y, x, direction):
+        if direction == Direction.VERTICAL:
+            if self.board_game[y][x] == self.board_game[y + 1][x]:
+                return self.compute_length(y + 1, x, direction) + 1
+            return 1
+        if self.board_game[y][x] == self.board_game[y][x + 1]:
+            return self.compute_length(y, x + 1, direction) + 1
+        return 1
+
+    def search_goal(self):
+        for row in range(self.height):
+            for column in range(self.width):
+                if self.board_game[row][column] == '*':
+                    return column, row
+        raise Exception('Can\' find goal')
+        pass
 
 
 class State:
@@ -323,7 +347,8 @@ class State:
                     board_game.make_way(cars=cars, car=car_state, action=CAR_ACTION.BACKWARD)
 
         else:
-            while not is_impossible(board_game.board_game[y + car_state.length][x]) or is_car(board_game.board_game[y + car_state.length][x]):
+            while not is_impossible(board_game.board_game[y + car_state.length][x]) or is_car(
+                    board_game.board_game[y + car_state.length][x]):
                 if not is_car(board_game.board_game[y + car_state.length][x]):
                     board_game.deplacement(cars[board_game.board_game[y][x]], CAR_ACTION.BACKWARD)
                     y += 1
@@ -342,7 +367,8 @@ class State:
         y = car_state.y
 
         if car_state.direction == Direction.HORIZONTAL:
-            while ( not is_impossible(board_game.board_game[y][x + car_state.length]) and not is_win(board_game.board_game[y][x + car_state.length]) ) or\
+            while (not is_impossible(board_game.board_game[y][x + car_state.length]) and not is_win(
+                    board_game.board_game[y][x + car_state.length])) or \
                     is_car(board_game.board_game[y][x + car_state.length]):
                 if not board_game.deplacement_will_crush_a_car(car=car_state, action=CAR_ACTION.FORWARD):
                     board_game.deplacement(car=cars[board_game.board_game[y][x + 1]], action=CAR_ACTION.FORWARD)
@@ -355,7 +381,7 @@ class State:
 
         else:
             while not is_impossible(board_game.board_game[y - 1][x]) or is_car(board_game.board_game[y - 1][x]):
-                if not board_game.deplacement_will_crush_a_car(car=car_state, action=CAR_ACTION.FORWARD) :
+                if not board_game.deplacement_will_crush_a_car(car=car_state, action=CAR_ACTION.FORWARD):
                     board_game.deplacement(cars[board_game.board_game[y][x]], CAR_ACTION.FORWARD)
                     y -= 1
                     car_state.y = y
@@ -368,76 +394,34 @@ class State:
         return states
 
 
-
-
 ### Environnment => Positions de chaques voiture sur le plateau
 class Environment:
-    def __init__(self):
-        self.states = []
+    def __init__(self, board: str):
+        lines = board.strip().split('\n')
 
-        lines = LEVELS[1].strip().split('\n')
-        self.height = len(lines)
-        self.width = len(lines[0])
+        self.board_game = BoardGame(board_game=lines)
 
-        self.cars = self.init_cars(board_game=lines, height=self.height, width=self.width)
+        self.cars = self.board_game.compute_cars()
+
+        self.goal = self.board_game.search_goal()
 
         self.init_state = State.from_cars(self.cars)
 
-        board_game = BoardGame(lines)
-
-        self.states = State.states_from_cars(cars=self.cars, board_game=board_game)
+        self.states = State.states_from_cars(cars=self.cars, board_game=self.board_game)
 
         actions = self.init_actions(self.cars)
+
         print("self.cars ", self.cars)
         print("actions :", actions)
         print("states")
+
+        self.current_state = deepcopy(self.init_state)
 
         for state in self.states:
             print(state)
             if State((CarState(x=2, y=3, direction=Direction.HORIZONTAL, length=2),
                       CarState(x=5, y=3, direction=Direction.VERTICAL, length=3))) == state:
                 print("Equal")
-
-    def init_cars(self, board_game: List[str], height: int, width: int):
-        cars = {}
-        for row in range(height):
-            for col in range(width):  ## On s'occupe pas des rebords # ni du *
-                if 'a' <= board_game[row][col] <= 'z' and board_game[row][col] not in cars.keys():
-                    cars_state = self.carStateFromRowAndCol(lines=board_game, row=row, col=col)
-                    cars.update({board_game[row][col]: cars_state})
-        return dict(sorted(cars.items()))
-
-    def carStateFromRowAndCol(self, lines: List[str], row: int, col: int):
-        direction = self.directionFromLevel(lines=lines, row=row, col=col)
-        y, x = self.compute_starting_point(lines=lines, row=row, col=col, direction=direction)
-        length = self.compute_length(lines=lines, y=y, x=x, direction=direction)
-        car_state = CarState(x=x, y=y, direction=direction, length=length)
-        return car_state
-
-    def directionFromLevel(self, lines: List[str], row: int, col: int):
-        direction = Direction.VERTICAL
-        if lines[row][col] == lines[row][col + 1] or lines[row][col] == lines[row][col - 1]:
-            direction = Direction.HORIZONTAL
-        return direction
-
-    def compute_starting_point(self, lines: List[str], row: int, col: int, direction: Direction):
-        if direction == Direction.VERTICAL:
-            if lines[row][col] == lines[row][col - 1]:
-                return self.compute_starting_point(lines, row, col - 1, direction)
-            return row, col
-        if lines[row][col] == lines[row - 1][col]:
-            return self.compute_starting_point(lines, row - 1, col, direction)
-
-        return row, col
-
-    def compute_length(self, lines, y, x, direction):
-        if direction == Direction.VERTICAL:
-            if lines[y][x] == lines[y + 1][x]:
-                return self.compute_length(lines, y + 1, x, direction) + 1
-            return 1
-        if lines[y][x] == lines[y][x + 1]:
-            return self.compute_length(lines, y, x + 1, direction) + 1
-        return 1
 
     def init_actions(self, cars):
         actions = {}
