@@ -76,9 +76,9 @@ if __name__ == '__main__':
     environment = Environment()
     agent = Agent(environment)
 
-    window = Window(agent)
-    window.setup()
-    arcade.run()
+    # window = Window(agent)
+    # window.setup()
+    # arcade.run()
 
     # # Initialiser l'environment
     # environment = Environment(MAZE)
