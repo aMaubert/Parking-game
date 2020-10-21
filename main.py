@@ -48,7 +48,7 @@ LEVELS = ["""
 ########
 #ccc d #
 #    d #
-# aa d *
+#    d *
 #bbb   #
 #  e gg#
 #  e hh#
