@@ -1,7 +1,8 @@
 import arcade
 
 from agent import Agent
-from environment import Environment, Direction
+from enums.direction import Direction
+from environment import Environment
 
 
 REWARD_IMPOSSIBLE = -1000000
@@ -48,7 +49,7 @@ LEVELS = ["""
 ########
 #ccc d #
 #    d #
-# aa d *
+#    d *
 #bbb   #
 #  e gg#
 #  e hh#
