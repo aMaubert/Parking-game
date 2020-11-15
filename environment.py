@@ -34,16 +34,22 @@ class Environment:
         self.board_game = BoardGame(board_game=lines)
 
         self.cars = self.board_game.compute_cars()
-
+        # {'a' : CarState(x=, y=, length=, direction=),
+        #  'b' : CarState(x=, y=, length=, direction=D)}
+        print('cars', self.cars)
+        # exit(1)
         self.goal = self.board_game.search_goal()
 
         self.init_state = State.from_cars(self.cars)
+        self.current_state = deepcopy(self.init_state)
+        #init_state = (CarState(),CarState(),CarState())
 
         self.states = self.compute_states()
+        # states = [(CarState(),CarState(),CarState()), (CarState(),CarState(),CarState()), (CarState(),CarState(),CarState())]
 
         actions = self.init_actions()
 
-        self.current_state = deepcopy(self.init_state)
+
 
         print("states \n", self.states)
         print("self.cars ", self.cars)
@@ -74,6 +80,7 @@ class Environment:
         board_games = []
         current_car: CarState = deepcopy(self.cars[car_name])
         if current_car.is_horizontal():
+            ##Longeur de 2
             for start_x in range(MARGIN_WALL,
                                  self.board_game.width - current_car.length):  # Pour chaque position possible de cette voiture
                 # place first car
@@ -137,8 +144,8 @@ class Environment:
 
                     car_state.x = start_x
 
-                    if board_each_car_pos_x.place_car_is_possible(
-                            car=car_state) and car_name not in placed_cars_each_car_pos_x:
+                    if board_each_car_pos_x.place_car_is_possible(car=car_state) and\
+                       car_name not in placed_cars_each_car_pos_x:
                         board_each_car_pos_x.place_car(car_name=car_name, car=car_state)
 
                         placed_cars_each_car_pos_x.append(car_name)
