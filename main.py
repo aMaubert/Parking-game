@@ -71,30 +71,63 @@ class Window(arcade.Window):
     def setup(self):
         self.walls = arcade.SpriteList()
         self.cars = arcade.SpriteList()
+        self.ground = arcade.SpriteList()
         for row in range(self.agent.environment.board_game.height):
             for column in range(self.agent.environment.board_game.width):
                 if self.agent.environment.board_game.is_wall(x=column, y=row):
-                    sprite = arcade.Sprite(":resources:images/tiles/grassCenter.png", 0.5)
+                    if row == 0 and column == 0:
+                        sprite = arcade.Sprite("./medias/grassTileDownRight.png", 0.5)
+                    elif row == 0 and column == self.agent.environment.board_game.width - 1:
+                        sprite = arcade.Sprite("./medias/grassTileDownLeft.png", 0.5)
+                    elif row == self.agent.environment.board_game.height - 1 and column == 0:
+                        sprite = arcade.Sprite("./medias/grassTileTopRight.png", 0.5)
+                    elif row == self.agent.environment.board_game.height - 1 and column == self.agent.environment.board_game.width - 1:
+                        sprite = arcade.Sprite("./medias/grassTileTopLeft.png", 0.5)
+                    elif row == 0:
+                        sprite = arcade.Sprite("./medias/grassTileDown.png", 0.5)
+                    elif row == self.agent.environment.board_game.height - 1:
+                        sprite = arcade.Sprite("./medias/grassTileUp.png", 0.5)
+                    elif column == 0:
+                        sprite = arcade.Sprite("./medias/grassTileRight.png", 0.5)
+                    elif column == self.agent.environment.board_game.width - 1:
+                        sprite = arcade.Sprite("./medias/grassTileLeft.png", 0.5)
                     sprite.center_x = column * SPRITE_SIZE + SPRITE_SIZE * 0.5
                     sprite.center_y = self.height - (row * SPRITE_SIZE + SPRITE_SIZE * 0.5)
                     self.walls.append(sprite)
+                else:
+                    sprite = arcade.Sprite("./medias/groundTile.png", 0.5)
+                    sprite.center_x = column * SPRITE_SIZE + SPRITE_SIZE * 0.5
+                    sprite.center_y = self.height - (row * SPRITE_SIZE + SPRITE_SIZE * 0.5)
+                    self.ground.append(sprite)
 
+        # Sprite size : 64.
         for car_state in self.agent.environment.current_state.value:
-            print(car_state)
-            sprite = arcade.Sprite(":resources:images/enemies/slimeBlock.png", 1)
+            print("car : " + str(car_state))
             if car_state.direction == Direction.HORIZONTAL:
+                if car_state.length == 2:
+                    sprite = arcade.Sprite("./medias/minicarYellowRight.png", 1)
+                elif car_state.length == 3:
+                    sprite = arcade.Sprite("./medias/pickupGrayRight.png", 1)
+                elif car_state.length == 4:
+                    sprite = arcade.Sprite("./medias/touringcarWhiteRight.png", 1)
                 sprite.width = car_state.length * SPRITE_SIZE
                 sprite.height = SPRITE_SIZE
             else:
+                if car_state.length == 2:
+                    sprite = arcade.Sprite("./medias/minicarYellowUp.png", 1)
+                elif car_state.length == 3:
+                    sprite = arcade.Sprite("./medias/pickupGrayUp.png", 1)
+                elif car_state.length == 4:
+                    sprite = arcade.Sprite("./medias/touringcarWhiteUp.png", 1)
                 sprite.width = SPRITE_SIZE
                 sprite.height = car_state.length * SPRITE_SIZE
             sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
             sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
             self.cars.append(sprite)
 
-        self.goal = arcade.Sprite(":resources:images/items/flagGreen1.png", 0.5)
-        self.goal.center_x = self.agent.environment.goal[0] * self.goal.width + self.goal.width * 0.5
-        self.goal.center_y = self.height - (self.agent.environment.goal[1] * self.goal.width + self.goal.width * 0.5)
+        self.goal = arcade.Sprite("./medias/Finish.png", 0.5)
+        self.goal.center_x = self.agent.environment.goal[0] * self.goal.width + self.goal.width * 46.3
+        self.goal.center_y = self.height - (self.agent.environment.goal[1] * self.goal.width + self.goal.width * 23.3)
 
     def update_player(self):
         pass
@@ -105,6 +138,7 @@ class Window(arcade.Window):
     def on_draw(self):
         arcade.start_render()
         self.walls.draw()
+        self.ground.draw()
         self.goal.draw()
         self.cars.draw()
 

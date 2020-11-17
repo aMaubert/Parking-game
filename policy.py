@@ -19,7 +19,7 @@
 #        Longueur:
 
 #
-#                                                                                                  Voiture A Avance   Voiture A recule  ...  Voiture Z Avance   Voiture Z recule  (NbCAR * Actions par voiture)
+#  Voiture A Avance   Voiture A recule  ...  Voiture Z Avance   Voiture Z recule  (NbCAR * Actions par voiture)
 #  ((y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L),(y,x,D,L))
 #  (CarState, CarState, CarState, CarState)
 #
