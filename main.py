@@ -1,9 +1,10 @@
 import arcade
 
 from agent import Agent
+from car_state import CarState
 from enums.direction import Direction
 from environment import Environment
-
+from state import State
 
 REWARD_IMPOSSIBLE = -1000000
 REWARD_SUCCESS = 1000000
@@ -148,14 +149,25 @@ if __name__ == '__main__':
 
     # Initialiser l'environment
     environment = Environment(board=LEVELS[1])
-
+    print('')
     # Initialiser l'agent
     agent = Agent(environment)
 
-    print(environment.goal)
-    window = Window(agent)
-    window.setup()
-    arcade.run()
+    # while not agent.has_win():
+    #     print('')
+    #     a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
+    #     b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
+    #     c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
+    #     d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
+    #     environment.current_state = State(state=(a,b,c,d))
+
+    #
+    #
+    #
+    #
+    # window = Window(agent)
+    # window.setup()
+    # arcade.run()
 
     # # Initialiser l'environment
     # environment = Environment(MAZE)
