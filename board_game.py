@@ -3,6 +3,7 @@ from typing import List
 from car_state import CarState
 from enums.car_action import CAR_ACTION
 from enums.direction import Direction
+from enums.car_type import CarType
 
 def is_impossible(case: str):
     if case == ' ' or case == '*':
@@ -74,15 +75,27 @@ class BoardGame:
         for row in range(self.height):
             for col in range(self.width):  ## On s'occupe pas des rebords # ni du *
                 if 'a' <= self.board_game[row][col] <= 'z' and self.board_game[row][col] not in cars.keys():
-                    cars_state = self.compute_car_state_from_pos(row=row, col=col)
+                    cars_state = self.compute_car_state_from_pos(row=row, col=col, type=self.board_game[row][col])
                     cars.update({self.board_game[row][col]: cars_state})
         return dict(sorted(cars.items()))
 
-    def compute_car_state_from_pos(self, row, col):
+    def compute_car_state_from_pos(self, row, col, type):
         direction = self.compute_direction(row=row, col=col)
         y, x = self.compute_starting_point(row=row, col=col, direction=direction)
         length = self.compute_length(y=y, x=x, direction=direction)
-        return CarState(x=x, y=y, direction=direction, length=length)
+        if type == 'a':
+            carType = CarType.RED
+        elif type == 'b':
+            carType = CarType.WHITE
+        elif type == 'c':
+            carType = CarType.GREY
+        elif type == 'd':
+            carType = CarType.BLUE
+        elif type == 'e' or type == 'g':
+            carType = CarType.YELLOW
+        else:
+            carType = CarType.BLACK
+        return CarState(x=x, y=y, direction=direction, length=length, carType=carType)
 
     def compute_direction(self, row, col):
         direction = Direction.VERTICAL

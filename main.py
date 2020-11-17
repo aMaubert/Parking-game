@@ -2,6 +2,7 @@ import arcade
 
 from agent import Agent
 from car_state import CarState
+from enums.car_type import CarType
 from enums.direction import Direction
 from environment import Environment
 from state import State
@@ -101,25 +102,34 @@ class Window(arcade.Window):
                     sprite.center_y = self.height - (row * SPRITE_SIZE + SPRITE_SIZE * 0.5)
                     self.ground.append(sprite)
 
-        # Sprite size : 64.
         for car_state in self.agent.environment.current_state.value:
             print("car : " + str(car_state))
             if car_state.direction == Direction.HORIZONTAL:
-                if car_state.length == 2:
-                    sprite = arcade.Sprite("./medias/minicarYellowRight.png", 1)
-                elif car_state.length == 3:
-                    sprite = arcade.Sprite("./medias/pickupGrayRight.png", 1)
-                elif car_state.length == 4:
-                    sprite = arcade.Sprite("./medias/touringcarWhiteRight.png", 1)
+                if car_state.carType == CarType.RED:
+                    sprite = arcade.Sprite("./medias/red.png", 1)
+                elif car_state.carType == CarType.WHITE:
+                    sprite = arcade.Sprite("./medias/whiteRight.png", 1)
+                elif car_state.carType == CarType.GREY:
+                    sprite = arcade.Sprite("./medias/greyRight.png", 1)
+                elif car_state.carType == CarType.BLUE:
+                    sprite = arcade.Sprite("./medias/blueRight.png", 1)
+                elif car_state.carType == CarType.YELLOW:
+                    sprite = arcade.Sprite("./medias/yellowRight.png", 1)
+                else:
+                    sprite = arcade.Sprite("./medias/blackRight.png", 1)
                 sprite.width = car_state.length * SPRITE_SIZE
                 sprite.height = SPRITE_SIZE
             else:
-                if car_state.length == 2:
-                    sprite = arcade.Sprite("./medias/minicarYellowUp.png", 1)
-                elif car_state.length == 3:
-                    sprite = arcade.Sprite("./medias/pickupGrayUp.png", 1)
-                elif car_state.length == 4:
-                    sprite = arcade.Sprite("./medias/touringcarWhiteUp.png", 1)
+                if car_state.carType == CarType.WHITE:
+                    sprite = arcade.Sprite("./medias/whiteUp.png", 1)
+                elif car_state.carType == CarType.GREY:
+                    sprite = arcade.Sprite("./medias/greyUp.png", 1)
+                elif car_state.carType == CarType.BLUE:
+                    sprite = arcade.Sprite("./medias/blueUp.png", 1)
+                elif car_state.carType == CarType.YELLOW:
+                    sprite = arcade.Sprite("./medias/yellowUp.png", 1)
+                else:
+                    sprite = arcade.Sprite("./medias/blackUp.png", 1)
                 sprite.width = SPRITE_SIZE
                 sprite.height = car_state.length * SPRITE_SIZE
             sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
@@ -165,9 +175,9 @@ if __name__ == '__main__':
     #
     #
     #
-    # window = Window(agent)
-    # window.setup()
-    # arcade.run()
+    window = Window(agent)
+    window.setup()
+    arcade.run()
 
     # # Initialiser l'environment
     # environment = Environment(MAZE)
