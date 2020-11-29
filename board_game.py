@@ -95,7 +95,7 @@ class BoardGame:
             carType = CarType.YELLOW
         else:
             carType = CarType.BLACK
-        return CarState(x=x, y=y, direction=direction, length=length, carType=carType)
+        return CarState(x=x, y=y, direction=direction, length=length)
 
     def compute_direction(self, row, col):
         direction = Direction.VERTICAL
@@ -154,8 +154,6 @@ class BoardGame:
             for row in range(car.y, car.y + car.length):
                 if not self.position_is_empty(car.x, row):
                     return False
-        # print('car can be placed :',car)
-        # print(self)
         return True
 
     def is_all_cars_in_board(self, car_names: List[str]):
@@ -168,3 +166,11 @@ class BoardGame:
             if car_is_in_board is False:
                 return False
         return True
+
+    def remove_car(self, car_name):
+        for row in range(self.height):
+            board_game_row = list(self.board_game[row])
+            for column in range(self.width):
+                if car_name == board_game_row[column]:
+                    board_game_row[column] = ' '
+            self.board_game[row] = ''.join(board_game_row)

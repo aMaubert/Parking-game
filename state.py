@@ -1,4 +1,5 @@
 from car_state import CarState
+from enums.car_action import CAR_ACTION
 
 
 class State:
@@ -36,3 +37,22 @@ class State:
                 return False
 
         return True
+
+    def contains(self, car: CarState):
+        for each in self.value:
+            if each == car:
+                return True
+        return False
+        pass
+
+    def update(self, car_state: CarState, car_action: CAR_ACTION):
+        index_car = self.value.index(car_state)
+
+        cars_list = list(self.value)
+
+        car_state.update(action=car_action)
+
+        cars_list[index_car] = car_state
+
+        self.value = tuple(cars_list)
+        return self

@@ -2,7 +2,6 @@ import arcade
 
 from agent import Agent
 from car_state import CarState
-from enums.car_type import CarType
 from enums.direction import Direction
 from environment import Environment
 from state import State
@@ -102,32 +101,41 @@ class Window(arcade.Window):
                     sprite.center_y = self.height - (row * SPRITE_SIZE + SPRITE_SIZE * 0.5)
                     self.ground.append(sprite)
 
-        for car_state in self.agent.environment.current_state.value:
-            print("car : " + str(car_state))
+        count_horizontal = 0
+        count_vertical = 0
+        for car_state in self.agent.state.value:
             if car_state.direction == Direction.HORIZONTAL:
-                if car_state.carType == CarType.RED:
+                if car_state.is_horizontal() and car_state.y == 3:
                     sprite = arcade.Sprite("./medias/red.png", 1)
-                elif car_state.carType == CarType.WHITE:
+                elif count_horizontal == 0:
                     sprite = arcade.Sprite("./medias/whiteRight.png", 1)
-                elif car_state.carType == CarType.GREY:
+                    count_horizontal += 1
+                elif count_horizontal == 1:
                     sprite = arcade.Sprite("./medias/greyRight.png", 1)
-                elif car_state.carType == CarType.BLUE:
+                    count_horizontal += 1
+                elif count_horizontal == 2:
                     sprite = arcade.Sprite("./medias/blueRight.png", 1)
-                elif car_state.carType == CarType.YELLOW:
+                    count_horizontal += 1
+                elif count_horizontal == 3:
                     sprite = arcade.Sprite("./medias/yellowRight.png", 1)
+                    count_horizontal += 1
                 else:
                     sprite = arcade.Sprite("./medias/blackRight.png", 1)
                 sprite.width = car_state.length * SPRITE_SIZE
                 sprite.height = SPRITE_SIZE
             else:
-                if car_state.carType == CarType.WHITE:
+                if count_vertical == 0:
                     sprite = arcade.Sprite("./medias/whiteUp.png", 1)
-                elif car_state.carType == CarType.GREY:
+                    count_vertical += 1
+                elif count_vertical == 1:
                     sprite = arcade.Sprite("./medias/greyUp.png", 1)
-                elif car_state.carType == CarType.BLUE:
+                    count_vertical += 1
+                elif count_vertical == 2:
                     sprite = arcade.Sprite("./medias/blueUp.png", 1)
-                elif car_state.carType == CarType.YELLOW:
+                    count_vertical += 1
+                elif count_vertical == 3:
                     sprite = arcade.Sprite("./medias/yellowUp.png", 1)
+                    count_vertical += 1
                 else:
                     sprite = arcade.Sprite("./medias/blackUp.png", 1)
                 sprite.width = SPRITE_SIZE
@@ -159,47 +167,37 @@ if __name__ == '__main__':
 
     # Initialiser l'environment
     environment = Environment(board=LEVELS[1])
-    print('')
     # Initialiser l'agent
     agent = Agent(environment)
 
-    # while not agent.has_win():
-    #     print('')
-    #     a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
-    #     b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
-    #     c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
-    #     d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
-    #     environment.current_state = State(state=(a,b,c,d))
+    while not agent.has_win():
 
-    #
-    #
-    #
-    #
+        #TODO Best action
+        best_action = agent.best_action()
+
+        agent.do(best_action)
+
+        #TODO Update Policy
+        agent.update_policy()
+
+
+        #TODO remove below code when all is implemented
+        ##Won Condition true
+        a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
+        b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
+        c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
+        d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
+        agent.state = State(state=(a,b,c,d))
+
     window = Window(agent)
     window.setup()
     arcade.run()
 
-    # # Initialiser l'environment
-    # environment = Environment(MAZE)
-    #
-    # # Initialiser l'agent
-    # agent = Agent(environment)
-    #
-    # # Boucle principale
-    # # Tant que l'agent n'est pas sorti du labyrinthe
-    # step = 1
-    # while agent.state != environment.goal:
-    #     # for step in range(10):
-    #     # Choisir la meilleure action de l'agent
-    #     action = agent.best_action()
-    #
-    #     # Obtenir le nouvel état de l'agent et sa récompense
-    #     agent.do(action)
-    #     print('#', step, 'ACTION:', action, 'STATE:', agent.previous_state, '->', agent.state, 'SCORE:', agent.score)
-    #     step += 1
-    #
-    #     # A partir de St, St+1, at, rt+1, on met à jour la politique (policy, q-table, etc.)
-    #     agent.update_policy()
+
+
+
+
+
 
 #
 # Systeme de score proposition :

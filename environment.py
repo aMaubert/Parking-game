@@ -19,6 +19,10 @@ empty_board = """
 
 MARGIN_WALL = 1
 
+REWARD_IMPOSSIBLE = -1000000
+REWARD_SUCCESS = 1000000
+REWARD_DEFAULT = -1
+
 
 def state_already_found(board: BoardGame, states: List[BoardGame]):
     for each_board in states:
@@ -36,32 +40,29 @@ class Environment:
         self.cars = self.board_game.compute_cars()
         # {'a' : CarState(x=, y=, length=, direction=),
         #  'b' : CarState(x=, y=, length=, direction=D)}
-        print('cars', self.cars)
-        # exit(1)
+
         self.goal = self.board_game.search_goal()
 
-        self.init_state = State.from_cars(self.cars)
-        self.current_state = deepcopy(self.init_state)
         #init_state = (CarState(),CarState(),CarState())
 
         self.states = self.compute_states()
         # states = [(CarState(),CarState(),CarState()), (CarState(),CarState(),CarState()), (CarState(),CarState(),CarState())]
+        self.cars = self.board_game.compute_cars()
 
-        actions = self.init_actions()
+        self.init_state = State.from_cars(self.cars)
 
-
+        self.current_state = deepcopy(self.init_state)
 
         print("states \n", self.states)
         print("self.cars ", self.cars)
-        print("actions :", actions)
-        print("states")
 
     def init_actions(self):
-        actions = {}
+        actions = []
         cars = deepcopy(self.cars)
         for each_car, each_car_state in cars.items():
-            actions.update({(each_car, CAR_ACTION.FORWARD): 0})
-            actions.update({(each_car, CAR_ACTION.BACKWARD): 0})
+            tuple_car_state = (each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length)
+            actions.append((tuple_car_state, CAR_ACTION.FORWARD))
+            actions.append((tuple_car_state, CAR_ACTION.BACKWARD))
         return actions
 
     def compute_states(self):
@@ -125,8 +126,7 @@ class Environment:
                     board_games.append(board)
                     print(board)
             else:
-                print('error')
-                exit(1)
+                raise Exception('Error in place_remaining_cars .')
             return
 
         for car_name, car_state in self.cars.items():  # Pour chaque Voiture
@@ -170,3 +170,37 @@ class Environment:
                         placed_cars_each_car_pos_y.append(car_name)
                         self.place_remaining_cars(board=deepcopy(board_each_car_pos_y),
                                                   placed_cars=placed_cars_each_car_pos_y, board_games=board_games)
+
+    def apply(self, state: State, action: (CarState, CAR_ACTION)):
+        car_state, car_action = action
+        if car_state in state.value:
+            new_state = state.update(car_state=car_state, car_action=car_action)
+            if new_state not in self.states:
+                raise Exception('New State is not identified .')
+        else:
+            raise Exception('Error car_state  nopt  found in  the states array')
+
+        if action == self.game_won():
+            reward = REWARD_SUCCESS
+        elif action == self.game_impossible():
+            reward = REWARD_IMPOSSIBLE
+        else:
+            reward = REWARD_DEFAULT
+
+        return new_state, reward
+
+    def game_won(self):
+        x, y = self.goal
+        for each_car in self.current_state.value:
+            if each_car.is_vertical():
+                continue
+            if each_car.x + each_car.length - 1 == x and \
+                    y == each_car.y:
+                return True
+        return False
+
+    def game_impossible(self):
+        for each_car in self.current_state.value:
+            if self.board_game.is_wall(each_car.x + each_car.length - 1, each_car.y):
+                return True
+        return False
