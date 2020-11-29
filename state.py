@@ -56,3 +56,8 @@ class State:
 
         self.value = tuple(cars_list)
         return self
+
+    def encode(self):
+        return tuple(
+            [(each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length) for each_car_state in
+             self.value])

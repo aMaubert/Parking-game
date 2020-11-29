@@ -40,6 +40,8 @@ class CarState:
         else:
             raise Exception("Car should be only vertical or horizontal")
 
+    def encode(self):
+        return self.x, self.y, self.direction, self.length
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.direction == other.direction and self.length == other.length

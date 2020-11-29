@@ -26,6 +26,7 @@
 #  1state = (CarState x NbCar)
 from typing import List
 
+from car_state import CarState
 from enums.car_action import CAR_ACTION
 from state import State
 
@@ -48,6 +49,12 @@ class Policy:  # Q-table
         #Here is a mocked value
         return state.value[0], CAR_ACTION.FORWARD
 
-    def update(self, previous_state: State, state: State, last_action: CAR_ACTION, reward: int):
-        #TODO implement this method
-        pass
+    def update(self, previous_state: State, state: State, last_action: (CarState, CAR_ACTION), reward: int):
+        # Q(st, at) = Q(st, at) + learning_rate * (reward + discount_factor * max(Q(state)) - Q(st, at))
+        # maxQ = max(self.table[state].values())
+        maxQ = max(self.table[state.encode()].values())
+        car_state, car_action = last_action
+        last_action_index = car_state.encode(), car_action
+
+        self.table[previous_state.encode()][last_action_index] += self.learning_rate * \
+                                                   (reward + self.discount_factor * maxQ - self.table[previous_state.encode()][last_action_index])

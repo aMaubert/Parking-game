@@ -174,7 +174,6 @@ if __name__ == '__main__':
 
         #TODO Best action
         best_action = agent.best_action()
-
         agent.do(best_action)
 
         #TODO Update Policy

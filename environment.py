@@ -60,9 +60,9 @@ class Environment:
         actions = []
         cars = deepcopy(self.cars)
         for each_car, each_car_state in cars.items():
-            tuple_car_state = (each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length)
-            actions.append((tuple_car_state, CAR_ACTION.FORWARD))
-            actions.append((tuple_car_state, CAR_ACTION.BACKWARD))
+            # tuple_car_state = (each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length)
+            actions.append((each_car_state.encode(), CAR_ACTION.FORWARD))
+            actions.append((each_car_state.encode(), CAR_ACTION.BACKWARD))
         return actions
 
     def compute_states(self):
@@ -172,7 +172,7 @@ class Environment:
                                                   placed_cars=placed_cars_each_car_pos_y, board_games=board_games)
 
     def apply(self, state: State, action: (CarState, CAR_ACTION)):
-        car_state, car_action = action
+        car_state, car_action = deepcopy(action)
         if car_state in state.value:
             new_state = state.update(car_state=car_state, car_action=car_action)
             if new_state not in self.states:
@@ -186,7 +186,6 @@ class Environment:
             reward = REWARD_IMPOSSIBLE
         else:
             reward = REWARD_DEFAULT
-
         return new_state, reward
 
     def game_won(self):
