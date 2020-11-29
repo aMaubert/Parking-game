@@ -9,6 +9,7 @@ from state import State
 
 REWARD_IMPOSSIBLE = -1000000
 REWARD_SUCCESS = 1000000
+REWARD_DEFAULT = -1
 
 ####
 #  Definitions

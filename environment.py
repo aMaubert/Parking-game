@@ -4,6 +4,8 @@ from copy import deepcopy
 from board_game import BoardGame
 from car_state import CarState
 from enums.car_action import CAR_ACTION
+from enums.direction import Direction
+from main import REWARD_SUCCESS, REWARD_IMPOSSIBLE, REWARD_DEFAULT
 from state import State
 
 empty_board = """
@@ -18,6 +20,9 @@ empty_board = """
 """
 
 MARGIN_WALL = 1
+
+
+
 
 
 def state_already_found(board: BoardGame, states: List[BoardGame]):
@@ -42,19 +47,44 @@ class Environment:
 
         self.init_state = State.from_cars(self.cars)
         self.current_state = deepcopy(self.init_state)
-        #init_state = (CarState(),CarState(),CarState())
+        # init_state = (CarState(),CarState(),CarState())
 
         self.states = self.compute_states()
         # states = [(CarState(),CarState(),CarState()), (CarState(),CarState(),CarState()), (CarState(),CarState(),CarState())]
 
         actions = self.init_actions()
 
-
-
         print("states \n", self.states)
         print("self.cars ", self.cars)
         print("actions :", actions)
         print("states")
+
+    def game_won(self):
+        x, y = self.goal
+        for each_car in self.current_state.value:
+            if each_car.direction == Direction.VERTICAL:
+                continue
+            if each_car.x + each_car.length - 1 == x and \
+                    y == each_car.y:
+                return True
+        return False
+
+    def game_impossible(self):
+        for each_car in self.current_state.value:
+            if self.board_game.is_wall(each_car.x + each_car.length - 1, each_car.y):
+                return True
+        return False
+
+    def apply(self, state, action):
+        if action == self.game_won():
+            reward = REWARD_SUCCESS
+
+        elif action == self.game_impossible():
+            reward = REWARD_IMPOSSIBLE
+        else:
+            reward = REWARD_DEFAULT
+
+        return reward
 
     def init_actions(self):
         actions = {}
@@ -144,8 +174,8 @@ class Environment:
 
                     car_state.x = start_x
 
-                    if board_each_car_pos_x.place_car_is_possible(car=car_state) and\
-                       car_name not in placed_cars_each_car_pos_x:
+                    if board_each_car_pos_x.place_car_is_possible(car=car_state) and \
+                            car_name not in placed_cars_each_car_pos_x:
                         board_each_car_pos_x.place_car(car_name=car_name, car=car_state)
 
                         placed_cars_each_car_pos_x.append(car_name)
