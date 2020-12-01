@@ -5,16 +5,19 @@ from copy import deepcopy
 
 from environment import REWARD_IMPOSSIBLE
 from policy import Policy
+from state import State
 
 
 class Agent:
     def __init__(self, environment):
         self.environment = environment
         self.policy = Policy(environment.states, environment.init_actions())
+        self.init_state = deepcopy(environment.init_state.value)
         self.reset()
 
     def reset(self):
-        self.state = self.environment.init_state
+        self.state = State(state=self.init_state)
+        print(self.init_state)
         self.previous_state = deepcopy(self.state)
         self.score = 0
 
@@ -22,23 +25,13 @@ class Agent:
         action = self.policy.best_action(self.state)
         count = 0
         while self.environment.action_is_impossible(action=action):
-            # Update la Q-Table pour ce state avec reward impossible
-            # print(self.environment.board_game)
-            # print(self.state)
-            # print(action)
-            # print(self.state)
-            # print(action)
             self.policy.table[self.state.encode()][action] = REWARD_IMPOSSIBLE
-            # print(self.policy.table[self.state.encode()])
-            print(action)
 
-            if count == 500:
-                print("count ", count)
-                exit(1)
-            count += 1
-            # print(self.policy.table[self.state.encode()])
-            print(self.environment.board_game)
-            # exit(1)
+            # if count == 500:
+            #     print("count ", count)
+            #     exit(1)
+            # count += 1
+
             action = self.policy.best_action(self.state)
         print(action)
         print(self.environment.board_game)

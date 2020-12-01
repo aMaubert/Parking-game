@@ -1,10 +1,10 @@
 import arcade
 
 from agent import Agent
-from car_state import CarState
+from board_game import BoardGame
+from enums.car_color import CarColor
 from enums.direction import Direction
 from environment import Environment
-from state import State
 
 REWARD_IMPOSSIBLE = -1000000
 REWARD_SUCCESS = 1000000
@@ -37,6 +37,15 @@ LEVELS = ["""
 #  efgg#
 #  e hh#
 ########
+""","""
+########
+#     c#
+#     c#
+# aa  c*
+#    b #
+#    b #
+#    b #
+########
 """, """
 ########
 #      #
@@ -46,7 +55,16 @@ LEVELS = ["""
 # d  b #
 # d ccc#
 ########
-""", """
+""","""
+########
+#   d  #
+#   d  #
+# aadb *
+#    b #
+#    b #
+# ccc  #
+########
+""","""
 ########
 #ccc d #
 #    d #
@@ -58,7 +76,7 @@ LEVELS = ["""
 """]
 
 SPRITE_SIZE = 64
-
+CHOOSEN_LEVEL = 1
 
 class Window(arcade.Window):
 
@@ -73,6 +91,9 @@ class Window(arcade.Window):
         self.walls = arcade.SpriteList()
         self.cars = arcade.SpriteList()
         self.ground = arcade.SpriteList()
+
+        self.sprite_cars = {}
+
         for row in range(self.agent.environment.board_game.height):
             for column in range(self.agent.environment.board_game.width):
                 if self.agent.environment.board_game.is_wall(x=column, y=row):
@@ -101,105 +122,78 @@ class Window(arcade.Window):
                     sprite.center_y = self.height - (row * SPRITE_SIZE + SPRITE_SIZE * 0.5)
                     self.ground.append(sprite)
 
-        count_horizontal = 0
-        count_vertical = 0
-        for car_state in self.agent.state.value:
+        cars = self.agent.environment.board_game.compute_cars()
+        for car_name,car_state in cars.items():
             if car_state.direction == Direction.HORIZONTAL:
-                if car_state.is_horizontal() and car_state.y == 3:
+                if car_name == CarColor.RED.value:
                     sprite = arcade.Sprite("./medias/red.png", 1)
-                elif count_horizontal == 0:
+                elif car_name == CarColor.WHITE.value:
                     sprite = arcade.Sprite("./medias/whiteRight.png", 1)
-                    count_horizontal += 1
-                elif count_horizontal == 1:
+                elif car_name == CarColor.GREY.value:
                     sprite = arcade.Sprite("./medias/greyRight.png", 1)
-                    count_horizontal += 1
-                elif count_horizontal == 2:
+                elif car_name == CarColor.BLUE.value:
                     sprite = arcade.Sprite("./medias/blueRight.png", 1)
-                    count_horizontal += 1
-                elif count_horizontal == 3:
+                elif car_name == CarColor.YELLOW.value:
                     sprite = arcade.Sprite("./medias/yellowRight.png", 1)
-                    count_horizontal += 1
-                else:
+                elif car_name == CarColor.BLACK.value:
                     sprite = arcade.Sprite("./medias/blackRight.png", 1)
                 sprite.width = car_state.length * SPRITE_SIZE
                 sprite.height = SPRITE_SIZE
             else:
-                if count_vertical == 0:
+                if car_name == CarColor.WHITE.value:
                     sprite = arcade.Sprite("./medias/whiteUp.png", 1)
-                    count_vertical += 1
-                elif count_vertical == 1:
+                elif car_name == CarColor.GREY.value:
                     sprite = arcade.Sprite("./medias/greyUp.png", 1)
-                    count_vertical += 1
-                elif count_vertical == 2:
+                elif car_name == CarColor.BLUE.value:
                     sprite = arcade.Sprite("./medias/blueUp.png", 1)
-                    count_vertical += 1
-                elif count_vertical == 3:
+                elif car_name == CarColor.YELLOW.value:
                     sprite = arcade.Sprite("./medias/yellowUp.png", 1)
-                    count_vertical += 1
-                else:
+                elif car_name == CarColor.BLACK.value:
                     sprite = arcade.Sprite("./medias/blackUp.png", 1)
                 sprite.width = SPRITE_SIZE
                 sprite.height = car_state.length * SPRITE_SIZE
             sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
             sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
+
+            self.sprite_cars[car_name] =  sprite
             self.cars.append(sprite)
 
         self.goal = arcade.Sprite("./medias/Finish.png", 0.5)
         self.goal.center_x = self.agent.environment.goal[0] * self.goal.width + self.goal.width * 46.3
         self.goal.center_y = self.height - (self.agent.environment.goal[1] * self.goal.width + self.goal.width * 23.3)
 
-    def update_cars(self):
-        count_horizontal = 0
-        count_vertical = 0
-        for car_state in self.agent.state.value:
-            if car_state.direction == Direction.HORIZONTAL:
-                if car_state.is_horizontal() and car_state.y == 3:
-                    sprite = arcade.Sprite("./medias/red.png", 1)
-                elif count_horizontal == 0:
-                    sprite = arcade.Sprite("./medias/whiteRight.png", 1)
-                    count_horizontal += 1
-                elif count_horizontal == 1:
-                    sprite = arcade.Sprite("./medias/greyRight.png", 1)
-                    count_horizontal += 1
-                elif count_horizontal == 2:
-                    sprite = arcade.Sprite("./medias/blueRight.png", 1)
-                    count_horizontal += 1
-                elif count_horizontal == 3:
-                    sprite = arcade.Sprite("./medias/yellowRight.png", 1)
-                    count_horizontal += 1
-                else:
-                    sprite = arcade.Sprite("./medias/blackRight.png", 1)
-                sprite.width = car_state.length * SPRITE_SIZE
-                sprite.height = SPRITE_SIZE
-            else:
-                if count_vertical == 0:
-                    sprite = arcade.Sprite("./medias/whiteUp.png", 1)
-                    count_vertical += 1
-                elif count_vertical == 1:
-                    sprite = arcade.Sprite("./medias/greyUp.png", 1)
-                    count_vertical += 1
-                elif count_vertical == 2:
-                    sprite = arcade.Sprite("./medias/blueUp.png", 1)
-                    count_vertical += 1
-                elif count_vertical == 3:
-                    sprite = arcade.Sprite("./medias/yellowUp.png", 1)
-                    count_vertical += 1
-                else:
-                    sprite = arcade.Sprite("./medias/blackUp.png", 1)
-                sprite.width = SPRITE_SIZE
-                sprite.height = car_state.length * SPRITE_SIZE
+    def update_cars(self, action):
+        car_name, car_action = action
+        sprite = self.sprite_cars.get(car_name)
+        if not agent.has_win():
+            cars = self.agent.environment.board_game.compute_cars()
+            car_state = cars[car_name]
+
             sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
             sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
-            self.cars.append(sprite)
+            print(sprite)
+        else:
+            x ,y = self.agent.environment.goal
+            sprite.center_x = x * SPRITE_SIZE + sprite.width * 0.5
+            sprite.center_y = self.height - (y * SPRITE_SIZE + sprite.height * 0.5)
 
-    # def on_update(self, delta_time):
-    #     if not agent.has_win():
-    #         action = self.agent.best_action()
-    #         self.agent.do(action)
-    #         self.agent.update_policy()
-    #
-    #         #Rafraichir l'affichage de la voiture qui a bougé
-    #         self.update_cars()
+    def on_update(self, delta_time):
+
+        if not agent.has_win():
+            action = self.agent.best_action()
+            self.agent.do(action)
+            self.agent.update_policy()
+
+            #Rafraichir l'affichage de la voiture qui a bougé
+            self.update_cars(action=action)
+        print(self.agent.reward)
+        print(self.agent.state)
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.R:
+            self.agent.reset()
+            self.agent.environment.board_game = BoardGame(board_game=LEVELS[CHOOSEN_LEVEL].strip().split('\n'))
+            self.setup()
 
 
     def on_draw(self):
@@ -208,24 +202,25 @@ class Window(arcade.Window):
         self.ground.draw()
         self.goal.draw()
         self.cars.draw()
+        arcade.draw_text(f"Score: {self.agent.score}", 10, 10, arcade.csscolor.WHITE, 20)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
     # Initialiser l'environment
-    environment = Environment(board=LEVELS[1])
+    environment = Environment(board=LEVELS[CHOOSEN_LEVEL])
     # Initialiser l'agent
     agent = Agent(environment)
 
-    while not agent.has_win():
-        #TODO Best action
-        best_action = agent.best_action()
-
-        agent.do(best_action)
-
-        #TODO Update Policy
-        agent.update_policy()
+    # while not agent.has_win():
+    #     #TODO Best action
+    #     best_action = agent.best_action()
+    #
+    #     agent.do(best_action)
+    #
+    #     #TODO Update Policy
+    #     agent.update_policy()
 
 
         # #TODO remove below code when all is implemented

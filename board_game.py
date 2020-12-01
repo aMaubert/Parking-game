@@ -3,7 +3,6 @@ from typing import List
 from car_state import CarState
 from enums.car_action import CAR_ACTION
 from enums.direction import Direction
-from enums.car_type import CarType
 
 
 def is_impossible(case: str):
@@ -86,18 +85,6 @@ class BoardGame:
         direction = self.compute_direction(row=row, col=col)
         y, x = self.compute_starting_point(row=row, col=col, direction=direction)
         length = self.compute_length(y=y, x=x, direction=direction)
-        if type == 'a':
-            carType = CarType.RED
-        elif type == 'b':
-            carType = CarType.WHITE
-        elif type == 'c':
-            carType = CarType.GREY
-        elif type == 'd':
-            carType = CarType.BLUE
-        elif type == 'e' or type == 'g':
-            carType = CarType.YELLOW
-        else:
-            carType = CarType.BLACK
         return CarState(x=x, y=y, direction=direction, length=length)
 
     def compute_direction(self, row, col):

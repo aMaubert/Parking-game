@@ -19,8 +19,8 @@ empty_board = """
 
 MARGIN_WALL = 1
 
-REWARD_IMPOSSIBLE = -1000000
-REWARD_SUCCESS = 1000000
+REWARD_IMPOSSIBLE = -10
+REWARD_SUCCESS = 100
 REWARD_DEFAULT = -1
 
 
@@ -43,15 +43,15 @@ class Environment:
 
         self.goal = self.board_game.search_goal()
 
+        self.init_state = State.from_cars(deepcopy(self.cars))
+
         #init_state = (CarState(),CarState(),CarState())
 
         self.states = self.compute_states()
         # states = [(CarState(),CarState(),CarState()), (CarState(),CarState(),CarState()), (CarState(),CarState(),CarState())]
+
         self.cars = self.board_game.compute_cars()
 
-        self.init_state = State.from_cars(self.cars)
-
-        self.current_state = deepcopy(self.init_state)
 
         print("states \n", self.states)
         print("self.cars ", self.cars)
