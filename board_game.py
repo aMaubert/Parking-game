@@ -5,10 +5,12 @@ from enums.car_action import CAR_ACTION
 from enums.direction import Direction
 from enums.car_type import CarType
 
+
 def is_impossible(case: str):
     if case == ' ' or case == '*':
         return False
     return True
+
 
 class BoardGame:
 
@@ -61,12 +63,13 @@ class BoardGame:
 
     def __repr__(self):
         return '\n'.join(self.board_game)
+
     def __eq__(self, other):
         if self.height != other.height or self.width != other.width:
             return False
         for row in range(self.height):
             for column in range(self.width):
-                if self.board_game[row][column] != other.board_game[row][column] :
+                if self.board_game[row][column] != other.board_game[row][column]:
                     return False
         return True
 
@@ -141,6 +144,15 @@ class BoardGame:
                 board_game_row = list(self.board_game[row])
                 board_game_row[car.x] = car_name
                 self.board_game[row] = ''.join(board_game_row)
+
+
+    def remove_car(self, car_name: str):
+        for row in range(self.height):
+            board_game_row = list(self.board_game[row])
+            for column in range(self.width):
+                if board_game_row[column] == car_name:
+                    board_game_row[column] = ' '
+            self.board_game[row] = ''.join(board_game_row)
 
     def position_is_empty(self, x: int, y: int):
         return self.board_game[y][x] == ' '

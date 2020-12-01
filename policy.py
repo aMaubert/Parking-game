@@ -36,6 +36,7 @@ class Policy:  # Q-table
         self.table = {}
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
+        self.actions = actions
 
         for s in states:
             state = tuple([ (each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length) for each_car_state in s.value ])
@@ -44,17 +45,24 @@ class Policy:  # Q-table
                 self.table[state][a] = 0
 
     def best_action(self, state: State):
-        #TODO implement method
+        action = None
+        for a in self.table[state.encode()]:
+            if action is None or self.table[state.encode()][a] > self.table[state.encode()][action]:
+                action = a
 
-        #Here is a mocked value
-        return state.value[0], CAR_ACTION.FORWARD
+        return action
 
-    def update(self, previous_state: State, state: State, last_action: (CarState, CAR_ACTION), reward: int):
+    def update(self, previous_state: State, state: State, last_action: (str, CAR_ACTION), reward: int):
         # Q(st, at) = Q(st, at) + learning_rate * (reward + discount_factor * max(Q(state)) - Q(st, at))
-        # maxQ = max(self.table[state].values())
-        maxQ = max(self.table[state.encode()].values())
-        car_state, car_action = last_action
-        last_action_index = car_state.encode(), car_action
+        # maxQ = max(self.table[state].values()
+        # )
 
-        self.table[previous_state.encode()][last_action_index] += self.learning_rate * \
-                                                   (reward + self.discount_factor * maxQ - self.table[previous_state.encode()][last_action_index])
+        if not state.encode() in self.table.keys():
+            self.table[state.encode()] = {}
+            for a in self.actions:
+                self.table[state.encode()][a] = 0
+
+        maxQ = max(self.table[state.encode()].values())
+
+        self.table[previous_state.encode()][last_action] += self.learning_rate * \
+                                                   (reward + self.discount_factor * maxQ - self.table[previous_state.encode()][last_action])

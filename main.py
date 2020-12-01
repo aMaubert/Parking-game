@@ -148,11 +148,59 @@ class Window(arcade.Window):
         self.goal.center_x = self.agent.environment.goal[0] * self.goal.width + self.goal.width * 46.3
         self.goal.center_y = self.height - (self.agent.environment.goal[1] * self.goal.width + self.goal.width * 23.3)
 
-    def update_player(self):
-        pass
+    def update_cars(self):
+        count_horizontal = 0
+        count_vertical = 0
+        for car_state in self.agent.state.value:
+            if car_state.direction == Direction.HORIZONTAL:
+                if car_state.is_horizontal() and car_state.y == 3:
+                    sprite = arcade.Sprite("./medias/red.png", 1)
+                elif count_horizontal == 0:
+                    sprite = arcade.Sprite("./medias/whiteRight.png", 1)
+                    count_horizontal += 1
+                elif count_horizontal == 1:
+                    sprite = arcade.Sprite("./medias/greyRight.png", 1)
+                    count_horizontal += 1
+                elif count_horizontal == 2:
+                    sprite = arcade.Sprite("./medias/blueRight.png", 1)
+                    count_horizontal += 1
+                elif count_horizontal == 3:
+                    sprite = arcade.Sprite("./medias/yellowRight.png", 1)
+                    count_horizontal += 1
+                else:
+                    sprite = arcade.Sprite("./medias/blackRight.png", 1)
+                sprite.width = car_state.length * SPRITE_SIZE
+                sprite.height = SPRITE_SIZE
+            else:
+                if count_vertical == 0:
+                    sprite = arcade.Sprite("./medias/whiteUp.png", 1)
+                    count_vertical += 1
+                elif count_vertical == 1:
+                    sprite = arcade.Sprite("./medias/greyUp.png", 1)
+                    count_vertical += 1
+                elif count_vertical == 2:
+                    sprite = arcade.Sprite("./medias/blueUp.png", 1)
+                    count_vertical += 1
+                elif count_vertical == 3:
+                    sprite = arcade.Sprite("./medias/yellowUp.png", 1)
+                    count_vertical += 1
+                else:
+                    sprite = arcade.Sprite("./medias/blackUp.png", 1)
+                sprite.width = SPRITE_SIZE
+                sprite.height = car_state.length * SPRITE_SIZE
+            sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
+            sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
+            self.cars.append(sprite)
 
-    def on_update(self, delta_time):
-        pass
+    # def on_update(self, delta_time):
+    #     if not agent.has_win():
+    #         action = self.agent.best_action()
+    #         self.agent.do(action)
+    #         self.agent.update_policy()
+    #
+    #         #Rafraichir l'affichage de la voiture qui a bougé
+    #         self.update_cars()
+
 
     def on_draw(self):
         arcade.start_render()
@@ -171,22 +219,22 @@ if __name__ == '__main__':
     agent = Agent(environment)
 
     while not agent.has_win():
-
         #TODO Best action
         best_action = agent.best_action()
+
         agent.do(best_action)
 
         #TODO Update Policy
         agent.update_policy()
 
 
-        #TODO remove below code when all is implemented
-        ##Won Condition true
-        a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
-        b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
-        c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
-        d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
-        agent.state = State(state=(a,b,c,d))
+        # #TODO remove below code when all is implemented
+        # ##Won Condition true
+        # a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
+        # b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
+        # c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
+        # d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
+        # agent.state = State(state=(a,b,c,d))
 
     window = Window(agent)
     window.setup()

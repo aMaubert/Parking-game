@@ -3,6 +3,7 @@ from enums.car_action import CAR_ACTION
 from enums.direction import Direction
 from copy import deepcopy
 
+from environment import REWARD_IMPOSSIBLE
 from policy import Policy
 
 
@@ -18,7 +19,30 @@ class Agent:
         self.score = 0
 
     def best_action(self):
-        return self.policy.best_action(self.state)
+        action = self.policy.best_action(self.state)
+        count = 0
+        while self.environment.action_is_impossible(action=action):
+            # Update la Q-Table pour ce state avec reward impossible
+            # print(self.environment.board_game)
+            # print(self.state)
+            # print(action)
+            # print(self.state)
+            # print(action)
+            self.policy.table[self.state.encode()][action] = REWARD_IMPOSSIBLE
+            # print(self.policy.table[self.state.encode()])
+            print(action)
+
+            if count == 500:
+                print("count ", count)
+                exit(1)
+            count += 1
+            # print(self.policy.table[self.state.encode()])
+            print(self.environment.board_game)
+            # exit(1)
+            action = self.policy.best_action(self.state)
+        print(action)
+        print(self.environment.board_game)
+        return action
 
     def update_policy(self):
         self.policy.update(self.previous_state, self.state, self.last_action, self.reward)

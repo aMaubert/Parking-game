@@ -56,13 +56,19 @@ class Environment:
         print("states \n", self.states)
         print("self.cars ", self.cars)
 
+    @staticmethod
+    def fetch_car_name(cars: {str: CarState}, car_state_to_search: CarState):
+        for car_name, state_car in cars.items():
+            if state_car == car_state_to_search:
+                return car_name
+        raise Exception('Should retrieve the car')
+
     def init_actions(self):
         actions = []
         cars = deepcopy(self.cars)
-        for each_car, each_car_state in cars.items():
-            # tuple_car_state = (each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length)
-            actions.append((each_car_state.encode(), CAR_ACTION.FORWARD))
-            actions.append((each_car_state.encode(), CAR_ACTION.BACKWARD))
+        for each_car_name, each_car_state in cars.items():
+            actions.append((each_car_name, CAR_ACTION.FORWARD))
+            actions.append((each_car_name, CAR_ACTION.BACKWARD))
         return actions
 
     def compute_states(self):
@@ -171,26 +177,61 @@ class Environment:
                         self.place_remaining_cars(board=deepcopy(board_each_car_pos_y),
                                                   placed_cars=placed_cars_each_car_pos_y, board_games=board_games)
 
-    def apply(self, state: State, action: (CarState, CAR_ACTION)):
-        car_state, car_action = deepcopy(action)
+    def apply(self, state: State, action: (str, CAR_ACTION)):
+
+        car_name, car_action = deepcopy(action)
+        cars = self.board_game.compute_cars()
+        car_state = cars[car_name]
+
+        car_name = Environment.fetch_car_name(cars=cars, car_state_to_search=car_state)
+
         if car_state in state.value:
             new_state = state.update(car_state=car_state, car_action=car_action)
-            if new_state not in self.states:
+            if new_state not in self.states and not self.game_won(state=new_state):
                 raise Exception('New State is not identified .')
         else:
-            raise Exception('Error car_state  nopt  found in  the states array')
+            raise Exception('Error car_state  not  found in  the states array')
 
-        if action == self.game_won():
+
+        if self.game_won(state=new_state):
             reward = REWARD_SUCCESS
-        elif action == self.game_impossible():
+        elif self.game_impossible(state=new_state):
             reward = REWARD_IMPOSSIBLE
         else:
             reward = REWARD_DEFAULT
+
+        self.board_game.remove_car(car_name=car_name)
+        self.board_game.place_car(car_name=car_name, car=car_state)
+
         return new_state, reward
 
-    def game_won(self):
+    def action_is_impossible(self, action: (str, CAR_ACTION) ):
+        cars = self.board_game.compute_cars()
+        car_name, car_action = action
+        car_state = cars[car_name]
         x, y = self.goal
-        for each_car in self.current_state.value:
+
+
+        if car_state.is_horizontal() :
+            if car_action == CAR_ACTION.FORWARD :
+                if x == car_state.x + car_state.length and car_state.y == y:
+                    print("GAGNER")
+                    return False
+
+                return not self.board_game.position_is_empty(car_state.x + car_state.length, car_state.y)
+            else:
+                return not self.board_game.position_is_empty(car_state.x - 1, car_state.y)
+        elif car_state.is_vertical():
+            if car_action == CAR_ACTION.FORWARD:
+                return not self.board_game.position_is_empty(car_state.x, car_state.y - 1)
+            else:
+                return not self.board_game.position_is_empty(car_state.x, car_state.y + car_state.length)
+        return False
+
+
+    def game_won(self, state: State):
+        x, y = self.goal
+        for each_car in state.value:
             if each_car.is_vertical():
                 continue
             if each_car.x + each_car.length - 1 == x and \
@@ -198,8 +239,16 @@ class Environment:
                 return True
         return False
 
-    def game_impossible(self):
-        for each_car in self.current_state.value:
-            if self.board_game.is_wall(each_car.x + each_car.length - 1, each_car.y):
-                return True
+    def game_impossible(self, state: State):
+        for each_car in state.value:
+            if each_car.is_horizontal():
+                if self.board_game.is_wall(each_car.x + each_car.length, each_car.y):
+                    return True
+                elif not self.board_game.position_is_empty(each_car.x + each_car.length, each_car.y):
+                    return True
+            elif each_car.is_vertical():
+                if self.board_game.is_wall(each_car.x, each_car.y + each_car.length ):
+                    return True
+                elif not self.board_game.position_is_empty(each_car.x, each_car.y + each_car.length):
+                    return True
         return False

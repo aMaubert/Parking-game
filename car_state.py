@@ -1,6 +1,5 @@
 from enums.car_action import CAR_ACTION
 from enums.direction import Direction
-from enums.car_type import CarType
 
 
 class CarState:
