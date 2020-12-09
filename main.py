@@ -6,8 +6,8 @@ from enums.car_color import CarColor
 from enums.direction import Direction
 from environment import Environment
 
-REWARD_IMPOSSIBLE = -1000000
-REWARD_SUCCESS = 1000000
+REWARD_IMPOSSIBLE = -100
+REWARD_SUCCESS = 1000
 
 ####
 #  Definitions
@@ -37,7 +37,7 @@ LEVELS = ["""
 #  efgg#
 #  e hh#
 ########
-""","""
+""", """
 ########
 #     c#
 #     c#
@@ -55,7 +55,7 @@ LEVELS = ["""
 # d  b #
 # d ccc#
 ########
-""","""
+""", """
 ########
 #   d  #
 #   d  #
@@ -64,7 +64,7 @@ LEVELS = ["""
 #    b #
 # ccc  #
 ########
-""","""
+""", """
 ########
 #ccc d #
 #    d #
@@ -77,6 +77,7 @@ LEVELS = ["""
 
 SPRITE_SIZE = 64
 CHOOSEN_LEVEL = 1
+
 
 class Window(arcade.Window):
 
@@ -123,7 +124,7 @@ class Window(arcade.Window):
                     self.ground.append(sprite)
 
         cars = self.agent.environment.board_game.compute_cars()
-        for car_name,car_state in cars.items():
+        for car_name, car_state in cars.items():
             if car_state.direction == Direction.HORIZONTAL:
                 if car_name == CarColor.RED.value:
                     sprite = arcade.Sprite("./medias/red.png", 1)
@@ -155,7 +156,7 @@ class Window(arcade.Window):
             sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
             sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
 
-            self.sprite_cars[car_name] =  sprite
+            self.sprite_cars[car_name] = sprite
             self.cars.append(sprite)
 
         self.goal = arcade.Sprite("./medias/Finish.png", 0.5)
@@ -173,7 +174,7 @@ class Window(arcade.Window):
             sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
             print(sprite)
         else:
-            x ,y = self.agent.environment.goal
+            x, y = self.agent.environment.goal
             sprite.center_x = x * SPRITE_SIZE + sprite.width * 0.5
             sprite.center_y = self.height - (y * SPRITE_SIZE + sprite.height * 0.5)
 
@@ -184,7 +185,7 @@ class Window(arcade.Window):
             self.agent.do(action)
             self.agent.update_policy()
 
-            #Rafraichir l'affichage de la voiture qui a bougé
+            # Rafraichir l'affichage de la voiture qui a bougé
             self.update_cars(action=action)
         print(self.agent.reward)
         print(self.agent.state)
@@ -195,7 +196,6 @@ class Window(arcade.Window):
             self.agent.environment.board_game = BoardGame(board_game=LEVELS[CHOOSEN_LEVEL].strip().split('\n'))
             self.setup()
 
-
     def on_draw(self):
         arcade.start_render()
         self.walls.draw()
@@ -203,11 +203,14 @@ class Window(arcade.Window):
         self.goal.draw()
         self.cars.draw()
         arcade.draw_text(f"Score: {self.agent.score}", 10, 10, arcade.csscolor.WHITE, 20)
+        arcade.draw_text(f"Tentatives: {self.agent.tries}", 200, 10, arcade.csscolor.WHITE, 20)
+        if self.agent.has_win():
+            arcade.draw_text(f"Pour relancer, pressez 'R'.", 10,
+                             (agent.environment.board_game.width * SPRITE_SIZE) - 40, arcade.csscolor.WHITE, 20)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-
     # Initialiser l'environment
     environment = Environment(board=LEVELS[CHOOSEN_LEVEL])
     # Initialiser l'agent
@@ -222,24 +225,17 @@ if __name__ == '__main__':
     #     #TODO Update Policy
     #     agent.update_policy()
 
-
-        # #TODO remove below code when all is implemented
-        # ##Won Condition true
-        # a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
-        # b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
-        # c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
-        # d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
-        # agent.state = State(state=(a,b,c,d))
+    # #TODO remove below code when all is implemented
+    # ##Won Condition true
+    # a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
+    # b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
+    # c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
+    # d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
+    # agent.state = State(state=(a,b,c,d))
 
     window = Window(agent)
     window.setup()
     arcade.run()
-
-
-
-
-
-
 
 #
 # Systeme de score proposition :

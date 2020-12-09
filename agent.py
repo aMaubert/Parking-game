@@ -13,6 +13,7 @@ class Agent:
         self.environment = environment
         self.policy = Policy(environment.states, environment.init_actions())
         self.init_state = deepcopy(environment.init_state.value)
+        self.tries = 0
         self.reset()
 
     def reset(self):
@@ -20,6 +21,7 @@ class Agent:
         print(self.init_state)
         self.previous_state = deepcopy(self.state)
         self.score = 0
+        self.tries += 1
 
     def best_action(self):
         action = self.policy.best_action(self.state)
