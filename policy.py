@@ -32,7 +32,7 @@ from state import State
 
 
 class Policy:  # Q-table
-    def __init__(self, states: List[State], actions, learning_rate = 0.1, discount_factor = 0.5):
+    def __init__(self, states: List[State], actions, learning_rate = 1, discount_factor = 0.5):
         self.table = {}
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
@@ -61,8 +61,10 @@ class Policy:  # Q-table
             self.table[state.encode()] = {}
             for a in self.actions:
                 self.table[state.encode()][a] = 0
-
         maxQ = max(self.table[state.encode()].values())
-
         self.table[previous_state.encode()][last_action] += self.learning_rate * \
                                                    (reward + self.discount_factor * maxQ - self.table[previous_state.encode()][last_action])
+
+    def save_table(self):
+        pass
+

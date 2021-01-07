@@ -19,8 +19,8 @@ empty_board = """
 
 MARGIN_WALL = 1
 
-REWARD_IMPOSSIBLE = -10
-REWARD_SUCCESS = 100
+REWARD_IMPOSSIBLE = -100000000
+REWARD_SUCCESS = 500
 REWARD_DEFAULT = -1
 
 
@@ -195,8 +195,6 @@ class Environment:
 
         if self.game_won(state=new_state):
             reward = REWARD_SUCCESS
-        elif self.game_impossible(state=new_state):
-            reward = REWARD_IMPOSSIBLE
         else:
             reward = REWARD_DEFAULT
 
@@ -237,18 +235,4 @@ class Environment:
             if each_car.x + each_car.length - 1 == x and \
                     y == each_car.y:
                 return True
-        return False
-
-    def game_impossible(self, state: State):
-        for each_car in state.value:
-            if each_car.is_horizontal():
-                if self.board_game.is_wall(each_car.x + each_car.length, each_car.y):
-                    return True
-                elif not self.board_game.position_is_empty(each_car.x + each_car.length, each_car.y):
-                    return True
-            elif each_car.is_vertical():
-                if self.board_game.is_wall(each_car.x, each_car.y + each_car.length ):
-                    return True
-                elif not self.board_game.position_is_empty(each_car.x, each_car.y + each_car.length):
-                    return True
         return False

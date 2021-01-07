@@ -25,16 +25,10 @@ class Agent:
 
     def best_action(self):
         action = self.policy.best_action(self.state)
-        count = 0
         while self.environment.action_is_impossible(action=action):
             self.policy.table[self.state.encode()][action] = REWARD_IMPOSSIBLE
-
-            # if count == 500:
-            #     print("count ", count)
-            #     exit(1)
-            # count += 1
-
             action = self.policy.best_action(self.state)
+
         print(action)
         print(self.environment.board_game)
         return action

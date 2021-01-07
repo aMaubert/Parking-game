@@ -76,7 +76,7 @@ LEVELS = ["""
 """]
 
 SPRITE_SIZE = 64
-CHOOSEN_LEVEL = 1
+CHOOSEN_LEVEL = 2
 
 
 class Window(arcade.Window):
@@ -172,7 +172,6 @@ class Window(arcade.Window):
 
             sprite.center_x = car_state.x * SPRITE_SIZE + sprite.width * 0.5
             sprite.center_y = self.height - (car_state.y * SPRITE_SIZE + sprite.height * 0.5)
-            print(sprite)
         else:
             x, y = self.agent.environment.goal
             sprite.center_x = x * SPRITE_SIZE + sprite.width * 0.5
@@ -181,14 +180,16 @@ class Window(arcade.Window):
     def on_update(self, delta_time):
 
         if not agent.has_win():
+            print('main 183')
             action = self.agent.best_action()
+            print('main 185')
             self.agent.do(action)
+            print('main 187')
             self.agent.update_policy()
-
+            print('main 189')
             # Rafraichir l'affichage de la voiture qui a bougé
             self.update_cars(action=action)
-        print(self.agent.reward)
-        print(self.agent.state)
+            print('main 192')
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
@@ -207,6 +208,8 @@ class Window(arcade.Window):
         if self.agent.has_win():
             arcade.draw_text(f"Pour relancer, pressez 'R'.", 10,
                              (agent.environment.board_game.width * SPRITE_SIZE) - 40, arcade.csscolor.WHITE, 20)
+            #TODO save the Q-Table
+            self.agent.policy.save_table()
 
 
 # Press the green button in the gutter to run the script.
