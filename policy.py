@@ -1,4 +1,3 @@
-
 # Q-table
 #        U  D    L   R
 # (0, 0) 6  -7   10  20
@@ -26,23 +25,23 @@
 #  1state = (CarState x NbCar)
 from typing import List
 
-from car_state import CarState
 from enums.car_action import CAR_ACTION
+from paramaters import LEARNING_RATE, DISCOUNT_FACTOR
+from qtable_coder import QTableCoder
 from state import State
 
 
 class Policy:  # Q-table
-    def __init__(self, states: List[State], actions, learning_rate = 1, discount_factor = 0.5):
-        self.table = {}
+    def __init__(self, states: List[State], actions, learning_rate=LEARNING_RATE, discount_factor=DISCOUNT_FACTOR):
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.actions = actions
+        self.table_coder = QTableCoder(learning_rate, discount_factor)
+        if self.table_coder.is_chargeable() :
+            self.table = self.table_coder.load_table()
+        else:
+            self.init_table(states=states, actions=actions)
 
-        for s in states:
-            state = tuple([ (each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length) for each_car_state in s.value ])
-            self.table[state] = {}
-            for a in actions:
-                self.table[state][a] = 0
 
     def best_action(self, state: State):
         action = None
@@ -63,8 +62,19 @@ class Policy:  # Q-table
                 self.table[state.encode()][a] = 0
         maxQ = max(self.table[state.encode()].values())
         self.table[previous_state.encode()][last_action] += self.learning_rate * \
-                                                   (reward + self.discount_factor * maxQ - self.table[previous_state.encode()][last_action])
+                                                            (reward + self.discount_factor * maxQ -
+                                                             self.table[previous_state.encode()][last_action])
+
+    def init_table(self, states: List[State], actions):
+        self.table = {}
+
+        for s in states:
+            state = tuple([(each_car_state.x, each_car_state.y, each_car_state.direction, each_car_state.length) for
+                           each_car_state in s.value])
+            self.table[state] = {}
+            for a in actions:
+                self.table[state][a] = 0
 
     def save_table(self):
-        pass
+        self.table_coder.save_table(self.table)
 

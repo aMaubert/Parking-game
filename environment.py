@@ -4,6 +4,7 @@ from copy import deepcopy
 from board_game import BoardGame
 from car_state import CarState
 from enums.car_action import CAR_ACTION
+from paramaters import REWARD_SUCCESS, REWARD_DEFAULT
 from state import State
 
 empty_board = """
@@ -18,10 +19,6 @@ empty_board = """
 """
 
 MARGIN_WALL = 1
-
-REWARD_IMPOSSIBLE = -100000000
-REWARD_SUCCESS = 500
-REWARD_DEFAULT = -1
 
 
 def state_already_found(board: BoardGame, states: List[BoardGame]):
@@ -45,14 +42,8 @@ class Environment:
 
         self.init_state = State.from_cars(deepcopy(self.cars))
 
-        #init_state = (CarState(),CarState(),CarState())
-
         self.states = self.compute_states()
-        # states = [(CarState(),CarState(),CarState()), (CarState(),CarState(),CarState()), (CarState(),CarState(),CarState())]
-
         self.cars = self.board_game.compute_cars()
-
-
         print("states \n", self.states)
         print("self.cars ", self.cars)
 
@@ -150,8 +141,8 @@ class Environment:
 
                     car_state.x = start_x
 
-                    if board_each_car_pos_x.place_car_is_possible(car=car_state) and\
-                       car_name not in placed_cars_each_car_pos_x:
+                    if board_each_car_pos_x.place_car_is_possible(car=car_state) and \
+                            car_name not in placed_cars_each_car_pos_x:
                         board_each_car_pos_x.place_car(car_name=car_name, car=car_state)
 
                         placed_cars_each_car_pos_x.append(car_name)
@@ -192,7 +183,6 @@ class Environment:
         else:
             raise Exception('Error car_state  not  found in  the states array')
 
-
         if self.game_won(state=new_state):
             reward = REWARD_SUCCESS
         else:
@@ -203,15 +193,14 @@ class Environment:
 
         return new_state, reward
 
-    def action_is_impossible(self, action: (str, CAR_ACTION) ):
+    def action_is_impossible(self, action: (str, CAR_ACTION)):
         cars = self.board_game.compute_cars()
         car_name, car_action = action
         car_state = cars[car_name]
         x, y = self.goal
 
-
-        if car_state.is_horizontal() :
-            if car_action == CAR_ACTION.FORWARD :
+        if car_state.is_horizontal():
+            if car_action == CAR_ACTION.FORWARD:
                 if x == car_state.x + car_state.length and car_state.y == y:
                     print("GAGNER")
                     return False
@@ -225,7 +214,6 @@ class Environment:
             else:
                 return not self.board_game.position_is_empty(car_state.x, car_state.y + car_state.length)
         return False
-
 
     def game_won(self, state: State):
         x, y = self.goal

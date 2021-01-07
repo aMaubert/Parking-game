@@ -5,9 +5,8 @@ from board_game import BoardGame
 from enums.car_color import CarColor
 from enums.direction import Direction
 from environment import Environment
+from paramaters import SPRITE_SIZE, LEVELS, CHOOSEN_LEVEL
 
-REWARD_IMPOSSIBLE = -100
-REWARD_SUCCESS = 1000
 
 ####
 #  Definitions
@@ -26,66 +25,7 @@ REWARD_SUCCESS = 1000
 # Condition de Victoire du JEU :
 #       La voiture 'A' à franchie la sortie (La sortie correspond au caractère '*' en haut)
 #
-
-
-LEVELS = ["""
-########
-#ccc d #
-#    d #
-# aa d *
-#bbbf  #
-#  efgg#
-#  e hh#
-########
-""", """
-########
-#     c#
-#     c#
-# aa  c*
-#    b #
-#    b #
-#    b #
-########
-""", """
-########
-#      #
-#      #
-# aa b *
-# d  b #
-# d  b #
-# d ccc#
-########
-""", """
-########
-#   d  #
-#   d  #
-# aadb *
-#    b #
-#    b #
-# ccc  #
-########
-""", """
-########
-#ccc d #
-#    d #
-#aa  d *
-#bbb   #
-#  e   #
-#  e   #
-########
-""","""
-########
-#ccc d #
-#    d #
-#aa  d *
-#   bbb#
-#  e   #
-#  e   #
-########
-"""]
-
-SPRITE_SIZE = 64
-CHOOSEN_LEVEL = 5
+from qtable_coder import QTableCoder
 
 
 class Window(arcade.Window):
@@ -218,6 +158,7 @@ class Window(arcade.Window):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+
     # Initialiser l'environment
     environment = Environment(board=LEVELS[CHOOSEN_LEVEL])
     # Initialiser l'agent

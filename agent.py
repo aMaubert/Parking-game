@@ -3,7 +3,7 @@ from enums.car_action import CAR_ACTION
 from enums.direction import Direction
 from copy import deepcopy
 
-from environment import REWARD_IMPOSSIBLE
+from paramaters import REWARD_IMPOSSIBLE
 from policy import Policy
 from state import State
 
