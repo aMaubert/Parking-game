@@ -68,15 +68,24 @@ LEVELS = ["""
 ########
 #ccc d #
 #    d #
-#    d *
+#aa  d *
 #bbb   #
-#  e gg#
-#  e hh#
+#  e   #
+#  e   #
+########
+""","""
+########
+#ccc d #
+#    d #
+#aa  d *
+#   bbb#
+#  e   #
+#  e   #
 ########
 """]
 
 SPRITE_SIZE = 64
-CHOOSEN_LEVEL = 2
+CHOOSEN_LEVEL = 5
 
 
 class Window(arcade.Window):
@@ -180,16 +189,11 @@ class Window(arcade.Window):
     def on_update(self, delta_time):
 
         if not agent.has_win():
-            print('main 183')
             action = self.agent.best_action()
-            print('main 185')
             self.agent.do(action)
-            print('main 187')
             self.agent.update_policy()
-            print('main 189')
             # Rafraichir l'affichage de la voiture qui a bougé
             self.update_cars(action=action)
-            print('main 192')
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
