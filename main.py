@@ -5,27 +5,9 @@ from board_game import BoardGame
 from enums.car_color import CarColor
 from enums.direction import Direction
 from environment import Environment
-from paramaters import SPRITE_SIZE, LEVELS, CHOOSEN_LEVEL
-
-
-####
-#  Definitions
-####
-#
-# Une voiture c'est:
-#   - une position de départ (x,y)
-#   - Une direction (Horizontal / Vertical)
-#   - une taille
-#
-# Une Action :
-#   - Sélection d'une voiture (a,b,c, etc...)
-#   - on l'Avance (vers le heut si voiture Vertical sinon vers la droite) ou
-#         Recule (vers le bas sir voiture Vertical, sinon vers la gauche)
-#
-# Condition de Victoire du JEU :
-#       La voiture 'A' à franchie la sortie (La sortie correspond au caractère '*' en haut)
-#
+from paramaters import SPRITE_SIZE, LEVELS, CHOOSEN_LEVEL, LEARNING_RATE, DISCOUNT_FACTOR
 from qtable_coder import QTableCoder
+from state import State
 
 
 class Window(arcade.Window):
@@ -152,72 +134,43 @@ class Window(arcade.Window):
         if self.agent.has_win():
             arcade.draw_text(f"Pour relancer, pressez 'R'.", 10,
                              (agent.environment.board_game.width * SPRITE_SIZE) - 40, arcade.csscolor.WHITE, 20)
-            #TODO save the Q-Table
+            # TODO save the Q-Table
             self.agent.policy.save_table()
 
 
-# Press the green button in the gutter to run the script.
+####
+#  Definitions
+####
+#
+# Une voiture c'est:
+#   - une position de départ (x,y)
+#   - Une direction (Horizontal / Vertical)
+#   - une taille
+#
+# Une Action :
+#   - Sélection d'une voiture (a,b,c, etc...)
+#   - on l'Avance (vers le heut si voiture Vertical sinon vers la droite) ou
+#         Recule (vers le bas sir voiture Vertical, sinon vers la gauche)
+#
+# Condition de Victoire du JEU :
+#       La voiture 'A' à franchie la sortie (La sortie correspond au caractère '*' en haut)
+#
+
 if __name__ == '__main__':
 
+    table_coder = QTableCoder(LEARNING_RATE, DISCOUNT_FACTOR)
+    loaded_qtable = None
+    states = None
+    if table_coder.is_chargeable():
+        loaded_qtable = table_coder.load_table()
+        states = State.init_from_qtable(loaded_qtable)
+
+
     # Initialiser l'environment
-    environment = Environment(board=LEVELS[CHOOSEN_LEVEL])
+    environment = Environment(board=LEVELS[CHOOSEN_LEVEL], states=states)
     # Initialiser l'agent
-    agent = Agent(environment)
-
-    # while not agent.has_win():
-    #     #TODO Best action
-    #     best_action = agent.best_action()
-    #
-    #     agent.do(best_action)
-    #
-    #     #TODO Update Policy
-    #     agent.update_policy()
-
-    # #TODO remove below code when all is implemented
-    # ##Won Condition true
-    # a = CarState(x=6, y=3, direction=Direction.HORIZONTAL, length=2)
-    # b = CarState(x=5,y=4,direction=Direction.VERTICAL,length=3)
-    # c = CarState(x=2,y=6,direction=Direction.HORIZONTAL,length=3)
-    # d = CarState(x=2, y=2, direction=Direction.VERTICAL, length=3)
-    # agent.state = State(state=(a,b,c,d))
+    agent = Agent(environment, qtable=loaded_qtable)
 
     window = Window(agent)
     window.setup()
     arcade.run()
-
-#
-# Systeme de score proposition :
-#
-#   Dans le cas où une voitur sort du décor (position x,y == '#' ) : -100 points
-#   Dans le cas où la voiture 'A' à franchie la sortie (position x,y == '*' ) : +100 points
-#   Dans le cas où l'on est sur une case voiture (b,c,d,etc...) qui n'est pas la Voiture 'A':
-#         - si les case voiture sont à l'extremité on perd moin de points que les case au centres
-#         - Si les case de la voiture 'A' sont
-#         #############################################################
-#         #        ##        # #        ##        ##        ##        #
-#         # -5pts  ## -10pts # # -15pts ## -15pts ## -10pts ## -5pts  #
-#         #        ##        # #        ##        ##        ##        #
-#         #############################################################
-#         #        ##        # #        ##        ##        ##        #
-#         # -10pts ## -15pts # # -20pts ## -20pts ## -15pts ## -10pts #
-#         #        ##        # #        ##        ##        ##        #
-#         #############################################################
-#         #        ##        # #        ##        ##        ##
-#         # -15pts ## -20pts # # -25pts ## -25pts ## -20pts ## -15pts    => GOAL
-#         #        ##        # #        ##        ##        ##
-#         #############################################################
-#         #        ##        # #        ##        ##        ##        #
-#         # -15pts ## -20pts # # -25pts ## -25pts ## -20pts ## -15pts #
-#         #        ##        # #        ##        ##        ##        #
-#         #############################################################
-#         #        ##        # #        ##        ##        ##        #
-#         # -10pts ## -15pts # # -20pts ## -20pts ## -15pts ## -10pts #
-#         #        ##        # #        ##        ##        ##        #
-#         #############################################################
-#         #        ##        # #        ##        ##        ##        #
-#         # -5pts  ## -10pts # # -15pts ## -15pts ## -10pts ## -5pts  #
-#         #        ##        # #        ##        ##        ##        #
-#         #############################################################
-#
-#
-#

@@ -29,7 +29,7 @@ def state_already_found(board: BoardGame, states: List[BoardGame]):
 
 
 class Environment:
-    def __init__(self, board: str):
+    def __init__(self, board: str, states: List = None):
         lines = board.strip().split('\n')
 
         self.board_game = BoardGame(board_game=lines)
@@ -42,8 +42,12 @@ class Environment:
 
         self.init_state = State.from_cars(deepcopy(self.cars))
 
-        self.states = self.compute_states()
-        self.cars = self.board_game.compute_cars()
+        if states is None:
+            self.states = self.compute_states()
+            self.cars = self.board_game.compute_cars()
+        else :
+            self.states = states
+
         print("states \n", self.states)
         print("self.cars ", self.cars)
 

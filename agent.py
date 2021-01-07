@@ -9,9 +9,9 @@ from state import State
 
 
 class Agent:
-    def __init__(self, environment):
+    def __init__(self, environment, qtable=None):
         self.environment = environment
-        self.policy = Policy(environment.states, environment.init_actions())
+        self.policy = Policy(environment.states, environment.init_actions(), qtable=qtable)
         self.init_state = deepcopy(environment.init_state.value)
         self.tries = 0
         self.reset()

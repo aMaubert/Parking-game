@@ -21,6 +21,21 @@ class State:
             state.append(each_car_state)
         return State(state=tuple(state))
 
+    @staticmethod
+    def init_from_qtable(qtable):
+        states = []
+        for each_state_tuple in qtable:
+            car_states = []
+            for each_car_state_tuple in each_state_tuple:
+                print(each_car_state_tuple, type(each_car_state_tuple))
+                x = each_car_state_tuple[0]
+                y = each_car_state_tuple[1]
+                direction = each_car_state_tuple[2]
+                length = each_car_state_tuple[3]
+                car_states.append(CarState(x=x, y=y, direction=direction, length=length))
+            states.append(State(state=tuple(car_states)))
+        return states
+
     def __eq__(self, other):
         if len(self.value) != len(other.value):
             return False

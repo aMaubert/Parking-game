@@ -32,16 +32,17 @@ from state import State
 
 
 class Policy:  # Q-table
-    def __init__(self, states: List[State], actions, learning_rate=LEARNING_RATE, discount_factor=DISCOUNT_FACTOR):
+    def __init__(self, states: List[State], actions, qtable, learning_rate=LEARNING_RATE, discount_factor=DISCOUNT_FACTOR):
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.actions = actions
-        self.table_coder = QTableCoder(learning_rate, discount_factor)
-        if self.table_coder.is_chargeable() :
-            self.table = self.table_coder.load_table()
+
+        if qtable is not None :
+            self.table = qtable
         else:
             self.init_table(states=states, actions=actions)
 
+        self.table_coder = QTableCoder(self.learning_rate, self.discount_factor)
 
     def best_action(self, state: State):
         action = None

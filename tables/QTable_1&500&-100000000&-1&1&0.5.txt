@@ -26,7 +26,7 @@
 ((2, 3, HORIZONTAL, 2), (5, 3, VERTICAL, 3), (6, 2, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -1, ('c', FORWARD): -1, ('c', BACKWARD): -1}
 ((2, 3, HORIZONTAL, 2), (5, 3, VERTICAL, 3), (6, 3, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -1, ('c', FORWARD): -1, ('c', BACKWARD): -1}
 ((2, 3, HORIZONTAL, 2), (5, 3, VERTICAL, 3), (6, 4, VERTICAL, 3)):{('a', FORWARD): 29, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -1, ('c', FORWARD): -1, ('c', BACKWARD): -100000000}
-((2, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 1, VERTICAL, 3)):{('a', FORWARD): 5.5, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -100000000, ('c', BACKWARD): -1}
+((2, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 1, VERTICAL, 3)):{('a', FORWARD): 5.75, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -100000000, ('c', BACKWARD): -1}
 ((2, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 2, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): -1}
 ((2, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 3, VERTICAL, 3)):{('a', FORWARD): 29, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): -1}
 ((2, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 4, VERTICAL, 3)):{('a', FORWARD): 60, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): -100000000}
@@ -43,8 +43,8 @@
 ((3, 3, HORIZONTAL, 2), (5, 3, VERTICAL, 3), (6, 3, VERTICAL, 3)):{('a', FORWARD): -100000000, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -1, ('c', FORWARD): -1, ('c', BACKWARD): 29}
 ((3, 3, HORIZONTAL, 2), (5, 3, VERTICAL, 3), (6, 4, VERTICAL, 3)):{('a', FORWARD): -100000000, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): 60, ('c', FORWARD): -1, ('c', BACKWARD): -100000000}
 ((3, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 1, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -100000000, ('c', BACKWARD): 13.5}
-((3, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 2, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): 29.0}
-((3, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 3, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): 60.5}
+((3, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 2, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): 29.25}
+((3, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 3, VERTICAL, 3)):{('a', FORWARD): -1, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): 60.75}
 ((3, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 4, VERTICAL, 3)):{('a', FORWARD): 123.5, ('a', BACKWARD): -1, ('b', FORWARD): -1, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): -100000000}
 ((4, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 1, VERTICAL, 3)):{('a', FORWARD): -100000000, ('a', BACKWARD): -1, ('b', FORWARD): -100000000, ('b', BACKWARD): -100000000, ('c', FORWARD): -100000000, ('c', BACKWARD): -1}
 ((4, 3, HORIZONTAL, 2), (5, 4, VERTICAL, 3), (6, 2, VERTICAL, 3)):{('a', FORWARD): -100000000, ('a', BACKWARD): -1, ('b', FORWARD): -100000000, ('b', BACKWARD): -100000000, ('c', FORWARD): -1, ('c', BACKWARD): -1}

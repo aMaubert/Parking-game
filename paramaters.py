@@ -57,7 +57,7 @@ LEVELS = ["""
 ########
 """]
 
-CHOOSEN_LEVEL = 1
+CHOOSEN_LEVEL = 2
 
 SPRITE_SIZE = 64
 

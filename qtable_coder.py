@@ -17,7 +17,7 @@ class QTableCoder:
         return path.isfile(self.file_name())
 
     def file_name(self):
-        return 'QTable_' + str(CHOOSEN_LEVEL) + '&' \
+        return 'tables/QTable_' + str(CHOOSEN_LEVEL) + '&' \
                + str(REWARD_SUCCESS) + '&' \
                + str(REWARD_IMPOSSIBLE) + '&' \
                + str(REWARD_DEFAULT) + '&' \
