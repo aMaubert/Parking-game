@@ -55,9 +55,27 @@ LEVELS = ["""
 #  e   #
 #  e   #
 ########
+""","""
+########
+#ccc d #
+#    d #
+#aa  d *
+#   bbb#
+# fe   #
+# fe   #
+########
+""","""
+########
+#    dc#
+#   gdc#
+#aa gdc*
+#   bbb#
+# fe   #
+# fe   #
+########
 """]
 
-CHOOSEN_LEVEL = 2
+CHOOSEN_LEVEL = 6
 
 SPRITE_SIZE = 64
 

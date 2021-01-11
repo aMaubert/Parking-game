@@ -36,13 +36,14 @@ class Policy:  # Q-table
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.actions = actions
-
+        self.table_coder = QTableCoder(self.learning_rate, self.discount_factor)
         if qtable is not None :
+
             self.table = qtable
         else:
             self.init_table(states=states, actions=actions)
 
-        self.table_coder = QTableCoder(self.learning_rate, self.discount_factor)
+
 
     def best_action(self, state: State):
         action = None
